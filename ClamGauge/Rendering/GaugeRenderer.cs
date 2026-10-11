@@ -7,9 +7,20 @@ using ClamGauge.Layout;
 using SkiaSharp;
 using SkiaSharp.Views.Maui;
 
-internal static class GaugeRenderer
+internal sealed class GaugeRenderer : IDisposable
 {
     private const float BackgroundOverlap = 1.5f;
+
+    private readonly GaugeFontResolver fonts;
+
+    public int Measurements => fonts.Measurements;
+
+    public GaugeRenderer(string fontFamily)
+    {
+        fonts = new GaugeFontResolver(fontFamily);
+    }
+
+    public void Dispose() => fonts.Dispose();
 
     public static string FormatLabel(GaugeRenderState state, double value)
     {
@@ -36,7 +47,7 @@ internal static class GaugeRenderer
     public static SKColor GetPivotHighlight(SKColor color) =>
         new((byte)Math.Min(color.Red + 80, 255), (byte)Math.Min(color.Green + 50, 255), (byte)Math.Min(color.Blue + 40, 255));
 
-    public static void Render(SKCanvas canvas, float width, float height, GaugeRenderState state)
+    public void Render(SKCanvas canvas, float width, float height, GaugeRenderState state)
     {
         ArgumentNullException.ThrowIfNull(canvas);
         ArgumentNullException.ThrowIfNull(state);
@@ -225,18 +236,17 @@ internal static class GaugeRenderer
         }
     }
 
-    private static void DrawLabels(SKCanvas canvas, GaugeGeometry geometry, GaugeScale scale, GaugeRenderState state)
+    private void DrawLabels(SKCanvas canvas, GaugeGeometry geometry, GaugeScale scale, GaugeRenderState state)
     {
         if (state.LabelInterval <= 0)
         {
             return;
         }
 
-        using var font = new SKFont(SKTypeface.Default, state.LabelFontSize);
         using var paint = new SKPaint();
         paint.IsAntialias = true;
         paint.Color = state.LabelColor.ToSKColor();
-        var metrics = font.Metrics;
+        var metrics = fonts.GetMetrics(state.LabelFontSize, false);
         foreach (var value in scale.GetMarks(state.LabelInterval))
         {
             var text = FormatLabel(state, value);
@@ -245,8 +255,9 @@ internal static class GaugeRenderer
                 continue;
             }
 
+            var run = fonts.Shape(text, state.LabelFontSize, false);
             var (x, y) = geometry.GetPoint(scale.ToAngle(value), state.LabelExtent);
-            canvas.DrawText(text, GaugeTextLayout.CenterStart(x, font.MeasureText(text)), GaugeTextLayout.CenterBaseline(y, metrics.Ascent, metrics.Descent), SKTextAlign.Left, font, paint);
+            GaugeFontResolver.Draw(canvas, run, GaugeTextLayout.CenterStart(x, run.Width), GaugeTextLayout.CenterBaseline(y, metrics.Ascent, metrics.Descent), paint);
         }
     }
 
@@ -254,7 +265,7 @@ internal static class GaugeRenderer
     // Center value
     //--------------------------------------------------------------------------------
 
-    private static void DrawCenterValue(SKCanvas canvas, GaugeGeometry geometry, GaugeRenderState state)
+    private void DrawCenterValue(SKCanvas canvas, GaugeGeometry geometry, GaugeRenderState state)
     {
         if (!state.ShowValue)
         {
@@ -263,37 +274,34 @@ internal static class GaugeRenderer
 
         var x = geometry.CenterX;
         var y = geometry.CenterY + (geometry.Radius * state.ValueOffsetY);
-        var valueText = FormatValue(state);
-        using var valueFont = new SKFont(SKTypeface.Default, state.ValueFontSize);
+        var valueRun = fonts.Shape(FormatValue(state), state.ValueFontSize, false);
+        var valueMetrics = fonts.GetMetrics(state.ValueFontSize, false);
         using var valuePaint = new SKPaint();
         valuePaint.IsAntialias = true;
         valuePaint.Color = state.ValueColor.ToSKColor();
-        var valueMetrics = valueFont.Metrics;
-        var valueWidth = valueFont.MeasureText(valueText);
         var unit = state.Unit;
         if (String.IsNullOrEmpty(unit))
         {
-            canvas.DrawText(valueText, GaugeTextLayout.CenterStart(x, valueWidth), GaugeTextLayout.CenterBaseline(y, valueMetrics.Ascent, valueMetrics.Descent), SKTextAlign.Left, valueFont, valuePaint);
+            GaugeFontResolver.Draw(canvas, valueRun, GaugeTextLayout.CenterStart(x, valueRun.Width), GaugeTextLayout.CenterBaseline(y, valueMetrics.Ascent, valueMetrics.Descent), valuePaint);
             return;
         }
 
-        using var unitFont = new SKFont(SKTypeface.Default, state.UnitFontSize);
+        var unitRun = fonts.Shape(unit, state.UnitFontSize, false);
+        var unitMetrics = fonts.GetMetrics(state.UnitFontSize, false);
         using var unitPaint = new SKPaint();
         unitPaint.IsAntialias = true;
         unitPaint.Color = state.UnitColor.ToSKColor();
-        var unitMetrics = unitFont.Metrics;
-        var unitWidth = unitFont.MeasureText(unit);
         if (state.UnitPosition == GaugeUnitPosition.Bottom)
         {
             var (valueBaseline, unitBaseline) = GaugeTextLayout.StackBaselines(y, valueMetrics.Ascent, valueMetrics.Descent, unitMetrics.Ascent, unitMetrics.Descent);
-            canvas.DrawText(valueText, GaugeTextLayout.CenterStart(x, valueWidth), valueBaseline, SKTextAlign.Left, valueFont, valuePaint);
-            canvas.DrawText(unit, GaugeTextLayout.CenterStart(x, unitWidth), unitBaseline, SKTextAlign.Left, unitFont, unitPaint);
+            GaugeFontResolver.Draw(canvas, valueRun, GaugeTextLayout.CenterStart(x, valueRun.Width), valueBaseline, valuePaint);
+            GaugeFontResolver.Draw(canvas, unitRun, GaugeTextLayout.CenterStart(x, unitRun.Width), unitBaseline, unitPaint);
         }
         else
         {
-            var (valueStart, unitStart) = GaugeTextLayout.RowStarts(x, valueWidth, unitWidth);
-            canvas.DrawText(valueText, valueStart, GaugeTextLayout.CenterBaseline(y, valueMetrics.Ascent, valueMetrics.Descent), SKTextAlign.Left, valueFont, valuePaint);
-            canvas.DrawText(unit, unitStart, GaugeTextLayout.CenterBaseline(y, unitMetrics.Ascent, unitMetrics.Descent), SKTextAlign.Left, unitFont, unitPaint);
+            var (valueStart, unitStart) = GaugeTextLayout.RowStarts(x, valueRun.Width, unitRun.Width);
+            GaugeFontResolver.Draw(canvas, valueRun, valueStart, GaugeTextLayout.CenterBaseline(y, valueMetrics.Ascent, valueMetrics.Descent), valuePaint);
+            GaugeFontResolver.Draw(canvas, unitRun, unitStart, GaugeTextLayout.CenterBaseline(y, unitMetrics.Ascent, unitMetrics.Descent), unitPaint);
         }
     }
 

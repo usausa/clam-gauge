@@ -75,6 +75,12 @@ Labels with empty text are skipped.
 | `UnitPosition` | `GaugeUnitPosition` | `Bottom` | ✓ | Unit on the right of the value or below it; the pair is centered |
 | `ValueOffsetY` | `float` | `0.3` | ✓ | Center of the value below the center of the dial as a fraction of the radius |
 
+#### Font
+
+| Name | Type | Default | Bindable | Description |
+|---|---|---|:-:|---|
+| `FontFamily` | `string` | `sans-serif` | ✓ | Primary font of the labels, the value and the unit; missing characters are resolved through `GaugeFonts` |
+
 #### Needle
 
 | Name | Type | Default | Bindable | Description |
@@ -94,6 +100,23 @@ The center value shows the animated value as it is, while the needle stops at th
 ### 📣 Events
 
 `PaintSurface` of `SKCanvasView` is raised after the gauge is drawn, with the canvas in pixels.  
+
+## 🔤 GaugeFonts
+
+Global font fallback settings, read when a view creates its renderer.  
+Set them at startup, before the first view is shown.  
+Emoji presentation sequences (a character followed by U+FE0F) are matched against the emoji font first.  
+Variation selectors and zero width joiners only steer the font choice and are not drawn.  
+
+| Name | Type | Default | Description |
+|---|---|---|---|
+| `Languages` | `IReadOnlyList<string>` | `["ja"]` | BCP-47 tags for the per character system font lookup; the tag selects the glyph variant of shared CJK ideographs |
+| `Fallbacks` | `IReadOnlyList<SKTypeface>` | `[]` | Typefaces tried before the system lookup, for example a bundled font; they stay owned by the caller |
+
+```csharp
+GaugeFonts.Languages = ["ja", "en"];
+GaugeFonts.Fallbacks = [SKTypeface.FromStream(await FileSystem.OpenAppPackageFileAsync("NotoSansJP-Regular.ttf"))];
+```
 
 ## 🎨 GaugeRange
 

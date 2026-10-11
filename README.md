@@ -60,6 +60,14 @@ compass.Value = 135;
 
 The first value is shown at once and later values move the needle over `AnimationDuration` milliseconds.  
 
+Text is drawn with the `sans-serif` system font; characters it lacks are resolved per character through `GaugeFonts`.  
+Set a bundled font as a fallback at startup when the device fonts do not cover the language.  
+
+```csharp
+GaugeFonts.Languages = ["ja"];
+GaugeFonts.Fallbacks = [SKTypeface.FromStream(await FileSystem.OpenAppPackageFileAsync("NotoSansJP-Regular.ttf"))];
+```
+
 ## 🎨 Look
 
 | Part | Properties |
@@ -69,6 +77,7 @@ The first value is shown at once and later values move the needle over `Animatio
 | Arc | `ArcInnerExtent` / `ArcOuterExtent`, `ArcTrackColor`, `ArcStartColor` / `ArcEndColor`, or colored `Ranges` |
 | Scale | Major and minor ticks, `LabelInterval`, `LabelFormat`, `LabelConverter`, `LabelFormatter` |
 | Center value | `ShowValue`, `ValueFormat`, `Unit` on the right or below (`UnitPosition`), `ValueOffsetY` |
+| Text | `FontFamily` of the labels, the value and the unit, with per character fallback through `GaugeFonts` |
 | Needle | Length, widths and two side colors, pivot, `AnimationDuration`, `AnimationEasing` |
 
 Angles are degrees clockwise from 12 o'clock and extents are fractions of the radius inside the bezels.  
@@ -138,7 +147,14 @@ public sealed class WeatherViewModel : ObservableObject
 | **Face** | Solid or gradient background, outer and inner gradient bezels |
 | **Value** | Center value with a format, unit on the right or below, vertical offset |
 | **Needle** | Tapered two-tone needle, round pivot, animation with a duration and an easing |
+| **Fonts** | Per character fallback to `GaugeFonts` typefaces and system fonts, emoji sequences included |
 
 ## 📖 API
 
 See the [API reference](Document/API.md).  
+
+## 🌊 Clam family
+
+- [ClamCalendar](https://github.com/usausa/clam-calendar) - Calendar view
+- [ClamGrid](https://github.com/usausa/clam-grid) - Grid view
+- [ClamGauge](https://github.com/usausa/clam-gauge) - Circular gauge

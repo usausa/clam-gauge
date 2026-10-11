@@ -15,8 +15,10 @@ public sealed partial class ClamGaugeView : SKCanvasView
     public static readonly BindableProperty StartAngleProperty = BindableProperty.Create(nameof(StartAngle), typeof(float), typeof(ClamGaugeView), 225f, propertyChanged: OnRenderInputChanged);
     public static readonly BindableProperty SweepAngleProperty = BindableProperty.Create(nameof(SweepAngle), typeof(float), typeof(ClamGaugeView), 270f, propertyChanged: OnRenderInputChanged);
     public static readonly BindableProperty RangesProperty = BindableProperty.Create(nameof(Ranges), typeof(IList<GaugeRange>), typeof(ClamGaugeView), defaultValueCreator: static _ => new ObservableCollection<GaugeRange>(), propertyChanged: OnRangesChanged);
+    public static readonly BindableProperty FontFamilyProperty = BindableProperty.Create(nameof(FontFamily), typeof(string), typeof(ClamGaugeView), "sans-serif", propertyChanged: OnFontFamilyChanged);
 
     private readonly GaugeCollectionWatcher rangesWatcher;
+    private GaugeRenderer? renderer;
 
 #pragma warning disable CA1721
     public double Value
@@ -58,6 +60,12 @@ public sealed partial class ClamGaugeView : SKCanvasView
     }
 #pragma warning restore CA2227
 
+    public string FontFamily
+    {
+        get => (string)GetValue(FontFamilyProperty);
+        set => SetValue(FontFamilyProperty, value);
+    }
+
     public ClamGaugeView()
     {
         rangesWatcher = new GaugeCollectionWatcher(InvalidateSurface);
@@ -76,6 +84,8 @@ public sealed partial class ClamGaugeView : SKCanvasView
             CompleteNeedleAnimation();
         }
 
+        renderer?.Dispose();
+        renderer = null;
         base.OnHandlerChanging(args);
     }
 
@@ -102,12 +112,13 @@ public sealed partial class ClamGaugeView : SKCanvasView
             return;
         }
 
+        renderer ??= new GaugeRenderer(FontFamily);
         var canvas = e.Surface.Canvas;
         canvas.Save();
         try
         {
             canvas.Scale((float)(e.Info.Width / Width), (float)(e.Info.Height / Height));
-            GaugeRenderer.Render(canvas, (float)Width, (float)Height, CreateRenderState());
+            renderer.Render(canvas, (float)Width, (float)Height, CreateRenderState());
         }
         finally
         {
@@ -180,6 +191,14 @@ public sealed partial class ClamGaugeView : SKCanvasView
     {
         var view = (ClamGaugeView)bindable;
         view.rangesWatcher.Watch(newValue);
+        view.InvalidateSurface();
+    }
+
+    private static void OnFontFamilyChanged(BindableObject bindable, object oldValue, object newValue)
+    {
+        var view = (ClamGaugeView)bindable;
+        view.renderer?.Dispose();
+        view.renderer = null;
         view.InvalidateSurface();
     }
 }

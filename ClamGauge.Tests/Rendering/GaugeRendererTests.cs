@@ -79,10 +79,11 @@ public sealed class GaugeRendererTests
             Assert.NotEqual(0, bitmap.GetPixel(Size / 2, Size / 2).Alpha);
         }
 
+        using var renderer = new GaugeRenderer("sans-serif");
         using var surface = SKSurface.Create(new SKImageInfo(Size, Size));
-        GaugeRenderer.Render(surface.Canvas, 0, 0, views[0].CreateRenderState());
+        renderer.Render(surface.Canvas, 0, 0, views[0].CreateRenderState());
         surface.Canvas.Scale(2.625f);
-        GaugeRenderer.Render(surface.Canvas, Size / 2.625f, Size / 2.625f, views[1].CreateRenderState());
+        renderer.Render(surface.Canvas, Size / 2.625f, Size / 2.625f, views[1].CreateRenderState());
     }
 
     [Fact]
@@ -90,12 +91,13 @@ public sealed class GaugeRendererTests
     {
         // Arrange
         var view = new ClamGaugeView { Value = 50, GaugeBackgroundColor = Colors.Black };
+        using var renderer = new GaugeRenderer(view.FontFamily);
         using var surface = SKSurface.Create(new SKImageInfo(Size, Size));
-        GaugeRenderer.Render(surface.Canvas, Size, Size, view.CreateRenderState());
+        renderer.Render(surface.Canvas, Size, Size, view.CreateRenderState());
 
         // Act
         view.MaxValue = view.MinValue;
-        GaugeRenderer.Render(surface.Canvas, Size, Size, view.CreateRenderState());
+        renderer.Render(surface.Canvas, Size, Size, view.CreateRenderState());
 
         // Assert
         Assert.True(IsBlank(surface));
@@ -103,10 +105,28 @@ public sealed class GaugeRendererTests
         // Act
         view.MaxValue = 100;
         view.BezelOuterThickness = Size;
-        GaugeRenderer.Render(surface.Canvas, Size, Size, view.CreateRenderState());
+        renderer.Render(surface.Canvas, Size, Size, view.CreateRenderState());
 
         // Assert
         Assert.True(IsBlank(surface));
+    }
+
+    [Fact]
+    public void TextIsShapedByTheFontResolverOnceForRepeatedFrames()
+    {
+        // Arrange
+        var view = new ClamGaugeView { Value = 60, Unit = "回転/分", LabelFormatter = static value => $"{value:N0}℃" };
+        using var renderer = new GaugeRenderer(view.FontFamily);
+        using var surface = SKSurface.Create(new SKImageInfo(Size, Size));
+
+        // Act
+        renderer.Render(surface.Canvas, Size, Size, view.CreateRenderState());
+        var shaped = renderer.Measurements;
+        renderer.Render(surface.Canvas, Size, Size, view.CreateRenderState());
+
+        // Assert
+        Assert.True(shaped > 0);
+        Assert.Equal(shaped, renderer.Measurements);
     }
 
     [Fact]
@@ -194,8 +214,9 @@ public sealed class GaugeRendererTests
 
     private static SKBitmap Render(ClamGaugeView view)
     {
+        using var renderer = new GaugeRenderer(view.FontFamily);
         using var surface = SKSurface.Create(new SKImageInfo(Size, Size));
-        GaugeRenderer.Render(surface.Canvas, Size, Size, view.CreateRenderState());
+        renderer.Render(surface.Canvas, Size, Size, view.CreateRenderState());
         using var image = surface.Snapshot();
         return SKBitmap.FromImage(image);
     }

@@ -11,6 +11,7 @@ public sealed class ClamGaugeViewTests
         (nameof(ClamGaugeView.MaxValue), typeof(double), 100d),
         (nameof(ClamGaugeView.StartAngle), typeof(float), 225f),
         (nameof(ClamGaugeView.SweepAngle), typeof(float), 270f),
+        (nameof(ClamGaugeView.FontFamily), typeof(string), "sans-serif"),
         (nameof(ClamGaugeView.GaugeBackgroundColor), typeof(Color), Colors.Transparent),
         (nameof(ClamGaugeView.GaugeBackgroundColor2), typeof(Color), Colors.Transparent),
         (nameof(ClamGaugeView.BezelOuterThickness), typeof(float), 4f),
@@ -144,7 +145,8 @@ public sealed class ClamGaugeViewTests
         foreach (var (name, type, _) in Defaults)
         {
             index++;
-            if (name is nameof(ClamGaugeView.Value) or nameof(ClamGaugeView.AnimationDuration) or nameof(ClamGaugeView.AnimationEasing))
+
+            if (name is nameof(ClamGaugeView.Value) or nameof(ClamGaugeView.FontFamily) or nameof(ClamGaugeView.AnimationDuration) or nameof(ClamGaugeView.AnimationEasing))
             {
                 continue;
             }
