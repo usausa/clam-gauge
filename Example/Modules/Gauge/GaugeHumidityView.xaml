@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:s="http://smart/maui"
+             xmlns:shell="clr-namespace:Example.Shell"
+             xmlns:module="clr-namespace:Example.Modules.Gauge"
+             xmlns:clam="clr-namespace:ClamGauge;assembly=ClamGauge"
+             x:Class="Example.Modules.Gauge.GaugeHumidityView"
+             x:DataType="{x:Type module:GaugeHumidityViewModel}"
+             s:BindingContextResolver.Type="{x:Type module:GaugeHumidityViewModel}"
+             shell:ShellProperty.Title="Humidity"
+             shell:ShellProperty.Function1Text="Back"
+             shell:ShellProperty.Function2Text="Unit"
+             shell:ShellProperty.Function3Text="Labels"
+             shell:ShellProperty.Function4Text="Bands"
+             shell:ShellProperty.Function1Enabled="True"
+             shell:ShellProperty.Function2Enabled="True"
+             shell:ShellProperty.Function3Enabled="True"
+             shell:ShellProperty.Function4Enabled="True">
+
+    <Grid Style="{StaticResource FillGrid}"
+          RowDefinitions="*,Auto,Auto">
+        <clam:ClamGaugeView Grid.Row="0"
+                            Style="{StaticResource GaugeView}"
+                            Value="{Binding Value}"
+                            ArcEndColor="#60C0FF" ArcInnerExtent="0.62" ArcOuterExtent="0.74" ArcStartColor="#2060CC"
+                            ArcTrackColor="#30FFFFFF" BezelInnerThickness="0" BezelOuterEndColor="#404860" BezelOuterStartColor="#A0A8C0"
+                            BezelOuterThickness="3.5"
+                            GaugeBackgroundColor="{Binding GaugeBackgroundColor}"
+                            LabelColor="White" LabelExtent="0.88" LabelFontSize="14"
+                            LabelFormat="{Binding LabelFormat}"
+                            LabelInterval="20" MajorTickColor="White" MajorTickInnerExtent="0.62" MajorTickInterval="10"
+                            MajorTickOuterExtent="0.78" MaxValue="100" MinValue="0" MinorTickInterval="0"
+                            NeedleEndExtent="0.86" NeedleLeftColor="#1848C0" NeedleRightColor="#2858D0" NeedleStartWidth="8"
+                            PivotColor="#1848C0" PivotRadius="7"
+                            Ranges="{Binding Ranges}"
+                            Unit="%" UnitColor="#80B0FF" UnitFontSize="14"
+                            UnitPosition="{Binding UnitPosition}"
+                            ValueColor="White" ValueFontSize="22" ValueFormat="{}{0:N0}" ValueOffsetY="0.5">
+            <clam:ClamGaugeView.GestureRecognizers>
+                <TapGestureRecognizer Command="{Binding RandomCommand}" />
+            </clam:ClamGaugeView.GestureRecognizers>
+        </clam:ClamGaugeView>
+
+        <Slider Grid.Row="1"
+                Style="{StaticResource GaugeSlider}"
+                Value="{Binding Value, Mode=TwoWay}"
+                Minimum="0" Maximum="100" />
+
+        <Grid Grid.Row="2"
+              Style="{StaticResource SwatchGrid}"
+              ColumnDefinitions="88,*">
+            <Label Grid.Column="0"
+                   Style="{StaticResource SwatchLabel}"
+                   Text="Background" />
+            <HorizontalStackLayout Grid.Column="1"
+                                   Style="{StaticResource SwatchLayout}"
+                                   BindableLayout.ItemsSource="{Binding BackgroundSwatches}">
+                <BindableLayout.ItemTemplate>
+                    <DataTemplate x:DataType="{x:Type module:ColorSwatch}">
+                        <Button Style="{StaticResource SwatchButton}"
+                                Command="{Binding Command}"
+                                Background="{Binding Brush}" />
+                    </DataTemplate>
+                </BindableLayout.ItemTemplate>
+            </HorizontalStackLayout>
+        </Grid>
+    </Grid>
+
+</ContentView>

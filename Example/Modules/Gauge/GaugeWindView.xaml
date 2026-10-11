@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:s="http://smart/maui"
+             xmlns:shell="clr-namespace:Example.Shell"
+             xmlns:module="clr-namespace:Example.Modules.Gauge"
+             xmlns:clam="clr-namespace:ClamGauge;assembly=ClamGauge"
+             x:Class="Example.Modules.Gauge.GaugeWindView"
+             x:DataType="{x:Type module:GaugeWindViewModel}"
+             s:BindingContextResolver.Type="{x:Type module:GaugeWindViewModel}"
+             shell:ShellProperty.Title="Wind"
+             shell:ShellProperty.Function1Text="Back"
+             shell:ShellProperty.Function2Text="Labels"
+             shell:ShellProperty.Function3Text="Needle"
+             shell:ShellProperty.Function4Text="Value"
+             shell:ShellProperty.Function1Enabled="True"
+             shell:ShellProperty.Function2Enabled="True"
+             shell:ShellProperty.Function3Enabled="True"
+             shell:ShellProperty.Function4Enabled="True">
+
+    <Grid Style="{StaticResource FillGrid}"
+          RowDefinitions="*,Auto">
+        <clam:ClamGaugeView Grid.Row="0"
+                            Style="{StaticResource GaugeView}"
+                            Value="{Binding Value}"
+                            AnimationDuration="{Binding AnimationDuration}"
+                            ArcEndColor="Transparent" ArcStartColor="Transparent" ArcTrackColor="Transparent" BezelInnerThickness="0"
+                            BezelOuterEndColor="#252525" BezelOuterStartColor="#252525" BezelOuterThickness="6" GaugeBackgroundColor="#383838"
+                            LabelColor="White"
+                            LabelConverter="{Binding LabelConverter}"
+                            LabelExtent="0.90" LabelFontSize="28"
+                            LabelInterval="{Binding LabelInterval}"
+                            MajorTickColor="White" MajorTickInnerExtent="0.62" MajorTickInterval="45" MajorTickOuterExtent="0.78"
+                            MajorTickThickness="2" MaxValue="360" MinValue="0" MinorTickColor="#C0C0C0"
+                            MinorTickInnerExtent="0.66" MinorTickInterval="22.5" MinorTickOuterExtent="0.78" NeedleEndExtent="0.54"
+                            NeedleLeftColor="#CC2020" NeedleRightColor="#E03030" NeedleStartWidth="12" PivotColor="#CC2020"
+                            PivotRadius="10"
+                            ShowValue="{Binding ShowValue}"
+                            StartAngle="0" SweepAngle="360" ValueColor="White" ValueFontSize="22"
+                            ValueFormat="{}{0:N0}°">
+            <clam:ClamGaugeView.GestureRecognizers>
+                <TapGestureRecognizer Command="{Binding RandomCommand}" />
+            </clam:ClamGaugeView.GestureRecognizers>
+        </clam:ClamGaugeView>
+
+        <Slider Grid.Row="1"
+                Style="{StaticResource GaugeSlider}"
+                Value="{Binding Value, Mode=TwoWay}"
+                Minimum="0" Maximum="360" />
+    </Grid>
+
+</ContentView>

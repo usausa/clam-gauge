@@ -1,9 +1,14 @@
 <Solution>
   <Folder Name="/Example/">
+    <Project Path="Example/Example.csproj" DefaultStartup="true">
+      <Deploy />
+    </Project>
   </Folder>
   <Folder Name="/Library/">
+    <Project Path="ClamGauge/ClamGauge.csproj" />
   </Folder>
   <Folder Name="/Tests/">
+    <Project Path="ClamGauge.Tests/ClamGauge.Tests.csproj" />
   </Folder>
   <Folder Name="/Solution Items/">
     <File Path=".editorconfig" />

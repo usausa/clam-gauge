@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:s="http://smart/maui"
+             xmlns:shell="clr-namespace:Example.Shell"
+             xmlns:module="clr-namespace:Example.Modules.Gauge"
+             xmlns:clam="clr-namespace:ClamGauge;assembly=ClamGauge"
+             x:Class="Example.Modules.Gauge.GaugeSpeedView"
+             x:DataType="{x:Type module:GaugeSpeedViewModel}"
+             s:BindingContextResolver.Type="{x:Type module:GaugeSpeedViewModel}"
+             shell:ShellProperty.Title="Speed"
+             shell:ShellProperty.Function1Text="Back"
+             shell:ShellProperty.Function2Text="Easing"
+             shell:ShellProperty.Function3Text="Time"
+             shell:ShellProperty.Function4Text="Unit"
+             shell:ShellProperty.Function1Enabled="True"
+             shell:ShellProperty.Function2Enabled="True"
+             shell:ShellProperty.Function3Enabled="True"
+             shell:ShellProperty.Function4Enabled="True">
+
+    <ContentView.Resources>
+        <Style x:Key="SpeedGauge"
+               TargetType="clam:ClamGaugeView"
+               BasedOn="{StaticResource GaugeView}">
+            <Setter Property="MinValue" Value="0" />
+            <Setter Property="MaxValue" Value="200" />
+            <Setter Property="ValueColor" Value="#1A2E48" />
+            <Setter Property="GaugeBackgroundColor" Value="#5070A0" />
+            <Setter Property="GaugeBackgroundColor2" Value="#E4F2FC" />
+            <Setter Property="BezelOuterThickness" Value="3.5" />
+            <Setter Property="BezelOuterStartColor" Value="#D8EEFF" />
+            <Setter Property="BezelOuterEndColor" Value="#7888A8" />
+            <Setter Property="BezelInnerThickness" Value="2" />
+            <Setter Property="BezelInnerStartColor" Value="#5A6878" />
+            <Setter Property="BezelInnerEndColor" Value="#B8D4F0" />
+            <Setter Property="ArcInnerExtent" Value="0.82" />
+            <Setter Property="ArcOuterExtent" Value="0.94" />
+            <Setter Property="ArcTrackColor" Value="#25000000" />
+            <Setter Property="MajorTickInterval" Value="20" />
+            <Setter Property="MajorTickInnerExtent" Value="0.76" />
+            <Setter Property="MajorTickOuterExtent" Value="0.94" />
+            <Setter Property="MajorTickColor" Value="White" />
+            <Setter Property="MinorTickInterval" Value="10" />
+            <Setter Property="MinorTickInnerExtent" Value="0.82" />
+            <Setter Property="MinorTickOuterExtent" Value="0.94" />
+            <Setter Property="MinorTickColor" Value="#B0C8E0" />
+            <Setter Property="LabelInterval" Value="40" />
+            <Setter Property="LabelExtent" Value="0.64" />
+            <Setter Property="LabelFormat" Value="{}{0:N0}" />
+            <Setter Property="LabelFontSize" Value="18" />
+            <Setter Property="LabelColor" Value="#1A2E48" />
+            <Setter Property="ValueFormat" Value="{}{0:N0}" />
+            <Setter Property="ValueFontSize" Value="48" />
+            <Setter Property="ValueOffsetY" Value="0.5" />
+            <Setter Property="Unit" Value="km/h" />
+            <Setter Property="UnitFontSize" Value="14" />
+            <Setter Property="UnitColor" Value="#204060" />
+            <Setter Property="NeedleEndExtent" Value="0.90" />
+            <Setter Property="NeedleStartWidth" Value="8" />
+            <Setter Property="NeedleLeftColor" Value="#CC1818" />
+            <Setter Property="NeedleRightColor" Value="#DD2828" />
+            <Setter Property="PivotRadius" Value="6" />
+            <Setter Property="PivotColor" Value="#CC1818" />
+            <Setter Property="Ranges">
+                <Setter.Value>
+                    <x:Array Type="{x:Type clam:GaugeRange}">
+                        <clam:GaugeRange EndColor="#C8D020" EndValue="80" StartColor="#30CC30" StartValue="0" />
+                        <clam:GaugeRange EndColor="#FF8020" EndValue="140" StartColor="#C8D020" StartValue="80" />
+                        <clam:GaugeRange EndColor="#FF2020" EndValue="200" StartColor="#FF8020" StartValue="140" />
+                    </x:Array>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </ContentView.Resources>
+
+    <Grid Style="{StaticResource FillGrid}"
+          RowDefinitions="*,Auto">
+        <clam:ClamGaugeView Grid.Row="0"
+                            Style="{StaticResource SpeedGauge}"
+                            Value="{Binding Value}"
+                            AnimationDuration="{Binding AnimationDuration}"
+                            AnimationEasing="{Binding AnimationEasing}"
+                            UnitPosition="{Binding UnitPosition}">
+            <clam:ClamGaugeView.GestureRecognizers>
+                <TapGestureRecognizer Command="{Binding RandomCommand}" />
+            </clam:ClamGaugeView.GestureRecognizers>
+        </clam:ClamGaugeView>
+
+        <Slider Grid.Row="1"
+                Style="{StaticResource GaugeSlider}"
+                Value="{Binding Value, Mode=TwoWay}"
+                Minimum="0" Maximum="200" />
+    </Grid>
+
+</ContentView>
