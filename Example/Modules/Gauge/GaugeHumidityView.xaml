@@ -36,7 +36,7 @@
                             Ranges="{Binding Ranges}"
                             Unit="%" UnitColor="#80B0FF" UnitFontSize="14"
                             UnitPosition="{Binding UnitPosition}"
-                            ValueColor="White" ValueFontSize="22" ValueFormat="{}{0:N0}" ValueOffsetY="0.5">
+                            ValueColor="White" ValueFontSize="24" ValueFormat="{}{0:N0}" ValueOffsetY="0.5">
             <clam:ClamGaugeView.GestureRecognizers>
                 <TapGestureRecognizer Command="{Binding RandomCommand}" />
             </clam:ClamGaugeView.GestureRecognizers>

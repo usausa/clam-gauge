@@ -36,7 +36,7 @@
                             NeedleLeftColor="#CC2020" NeedleRightColor="#E03030" NeedleStartWidth="12" PivotColor="#CC2020"
                             PivotRadius="10"
                             ShowValue="{Binding ShowValue}"
-                            StartAngle="0" SweepAngle="360" ValueColor="White" ValueFontSize="22"
+                            StartAngle="0" SweepAngle="360" ValueColor="White" ValueFontSize="24"
                             ValueFormat="{}{0:N0}°">
             <clam:ClamGaugeView.GestureRecognizers>
                 <TapGestureRecognizer Command="{Binding RandomCommand}" />

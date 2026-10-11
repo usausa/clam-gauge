@@ -37,7 +37,7 @@
                             PivotColor="#CC5000" PivotRadius="8"
                             Ranges="{Binding Ranges}"
                             Unit="°C" UnitColor="#FFA040" UnitFontSize="14" UnitPosition="Right"
-                            ValueColor="White" ValueFontSize="22" ValueFormat="{}{0:N1}" ValueOffsetY="0.4">
+                            ValueColor="White" ValueFontSize="24" ValueFormat="{}{0:N1}" ValueOffsetY="0.4">
             <clam:ClamGaugeView.GestureRecognizers>
                 <TapGestureRecognizer Command="{Binding RandomCommand}" />
             </clam:ClamGaugeView.GestureRecognizers>

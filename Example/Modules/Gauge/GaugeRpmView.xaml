@@ -26,7 +26,7 @@
                             AnimationDuration="1000" ArcInnerExtent="0.80" ArcOuterExtent="0.88" ArcTrackColor="Transparent"
                             BezelInnerThickness="0" BezelOuterEndColor="#505058" BezelOuterStartColor="#D0D0D8" BezelOuterThickness="3.5"
                             GaugeBackgroundColor="#141414" GaugeBackgroundColor2="#D0D0D8" LabelColor="White" LabelExtent="0.65"
-                            LabelFontSize="22" LabelFormat="{}{0:N0}" LabelInterval="2" MajorTickColor="White"
+                            LabelFontSize="24" LabelFormat="{}{0:N0}" LabelInterval="2" MajorTickColor="White"
                             MajorTickInnerExtent="0.74" MajorTickInterval="1" MajorTickOuterExtent="0.90" MajorTickThickness="2"
                             MaxValue="8" MinValue="0" MinorTickColor="#A0A0A0" MinorTickInnerExtent="0.78"
                             MinorTickInterval="0.25" MinorTickOuterExtent="0.90"

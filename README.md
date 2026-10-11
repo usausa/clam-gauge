@@ -7,6 +7,14 @@
 A .NET MAUI circular gauge for Android drawn with SkiaSharp on a single canvas.  
 Face, bezels, arc, colored ranges, ticks, labels, center value and needle are all bindable properties, and the needle moves to a new value with an animation.  
 
+| 🌈 Gradient band | 💧 Percent labels | 🎨 Colored ranges |
+|:-:|:-:|:-:|
+| <img src="Document/pressure.png" width="240" /> | <img src="Document/humidity.png" width="240" /> | <img src="Document/temperature.png" width="240" /> |
+
+| 🧭 Compass labels | 🧩 Pattern in a style | 🏁 Turned scale and red zone |
+|:-:|:-:|:-:|
+| <img src="Document/wind.png" width="240" /> | <img src="Document/speed.png" width="240" /> | <img src="Document/rpm.png" width="240" /> |
+
 ## 🚀 Quick Start
 
 Call `UseSkiaSharp()` when building the application.  
@@ -64,7 +72,7 @@ The first value is shown at once and later values move the needle over `Animatio
 | Needle | Length, widths and two side colors, pivot, `AnimationDuration`, `AnimationEasing` |
 
 Angles are degrees clockwise from 12 o'clock and extents are fractions of the radius inside the bezels.  
-Thicknesses, widths and the pivot radius are canvas pixels, font sizes are DIP.  
+Thicknesses, widths, the pivot radius and font sizes are DIP.  
 
 A style can hold a whole pattern, ranges included.  
 
