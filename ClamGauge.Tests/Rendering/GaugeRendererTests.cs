@@ -256,8 +256,8 @@ public sealed class GaugeRendererTests
     // Pixel at an angle clockwise from 12 o'clock and an extent of the radius inside the default bezels
     private static SKColor Pixel(SKBitmap bitmap, float angle, float extent)
     {
-        var (x, y) = new GaugeGeometry(Size, Size, 4, 2, 0.77f, 0.87f).GetPoint(angle, extent);
-        return bitmap.GetPixel((int)x, (int)y);
+        var point = new GaugeGeometry(Size, Size, 4, 2, 0.77f, 0.87f).GetPoint(angle, extent);
+        return bitmap.GetPixel((int)point.X, (int)point.Y);
     }
 
     private sealed class CompassConverter : IValueConverter

@@ -2,36 +2,24 @@ namespace ClamGauge.Layout;
 
 internal readonly record struct GaugeScale(double MinValue, double MaxValue, float StartAngle, float SweepAngle)
 {
-    public static float ToSkiaAngle(float angle) => angle - 90f;
-
     public float ToAngle(double value)
     {
         var fraction = (value - MinValue) / (MaxValue - MinValue);
         return StartAngle + (float)(fraction * SweepAngle);
     }
 
-    public List<double> GetMarks(double interval)
+    public int GetMarkCount(double interval)
     {
-        var marks = new List<double>();
         if (interval <= 0)
         {
-            return marks;
+            return 0;
         }
 
         var count = (int)Math.Round((MaxValue - MinValue) / interval);
-        for (var i = 0; i <= count; i++)
-        {
-            var value = MinValue + (i * interval);
-            if (value > MaxValue + (interval * 0.001))
-            {
-                break;
-            }
-
-            marks.Add(Math.Min(value, MaxValue));
-        }
-
-        return marks;
+        return MinValue + (count * interval) > MaxValue + (interval * 0.001) ? count : count + 1;
     }
+
+    public double GetMark(double interval, int index) => Math.Min(MinValue + (index * interval), MaxValue);
 
     public bool TryGetArc(double startValue, double endValue, out float startAngle, out float sweepAngle)
     {

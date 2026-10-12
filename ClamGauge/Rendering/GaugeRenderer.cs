@@ -4,6 +4,8 @@ using System.Globalization;
 
 using ClamGauge.Layout;
 
+using SkiaExtension;
+
 using SkiaSharp;
 using SkiaSharp.Views.Maui;
 
@@ -11,13 +13,17 @@ internal sealed class GaugeRenderer : IDisposable
 {
     private const float BackgroundOverlap = 1.5f;
 
-    private readonly GaugeFontResolver fonts;
+    private readonly FontResolver fonts;
+    private readonly Dictionary<double, string> formattedLabels = [];
+    private (GaugeTextFormat? Format, CultureInfo? Culture, double MinValue, double MaxValue, double Interval) formattedLabelsKey;
+    private (double Value, GaugeTextFormat? Format, CultureInfo? Culture) formattedValueKey;
+    private string formattedValue = String.Empty;
 
     public int Measurements => fonts.Measurements;
 
     public GaugeRenderer(string fontFamily)
     {
-        fonts = new GaugeFontResolver(fontFamily);
+        fonts = new FontResolver(fontFamily);
     }
 
     public void Dispose() => fonts.Dispose();
@@ -174,8 +180,11 @@ internal sealed class GaugeRenderer : IDisposable
 
     private static void DrawRanges(SKCanvas canvas, GaugeGeometry geometry, GaugeScale scale, GaugeRenderState state)
     {
-        foreach (var range in state.Ranges)
+        var ranges = state.Ranges;
+        // ReSharper disable once ForCanBeConvertedToForeach
+        for (var i = 0; i < ranges.Count; i++)
         {
+            var range = ranges[i];
             if (scale.TryGetArc(range.StartValue, range.EndValue, out var startAngle, out var sweepAngle))
             {
                 DrawGradientArc(canvas, geometry, startAngle, sweepAngle, range.StartColor, range.EndColor ?? range.StartColor);
@@ -185,9 +194,7 @@ internal sealed class GaugeRenderer : IDisposable
 
     private static void DrawGradientArc(SKCanvas canvas, GaugeGeometry geometry, float startAngle, float sweepAngle, Color startColor, Color endColor)
     {
-        var center = new SKPoint(geometry.CenterX, geometry.CenterY);
-        using var sweep = SKShader.CreateSweepGradient(center, [startColor.ToSKColor(), endColor.ToSKColor()], [0f, 1f], SKShaderTileMode.Clamp, 0f, sweepAngle);
-        using var shader = sweep.WithLocalMatrix(SKMatrix.CreateRotationDegrees(GaugeScale.ToSkiaAngle(startAngle), center.X, center.Y));
+        using var shader = AngleHelper.CreateArcGradient(new SKPoint(geometry.CenterX, geometry.CenterY), AngleHelper.ToSkiaAngle(startAngle), sweepAngle, [startColor.ToSKColor(), endColor.ToSKColor()]);
         using var paint = CreateArcPaint(geometry);
         paint.Shader = shader;
         DrawArc(canvas, geometry, startAngle, sweepAngle, paint);
@@ -201,14 +208,8 @@ internal sealed class GaugeRenderer : IDisposable
         StrokeCap = SKStrokeCap.Butt
     };
 
-    private static void DrawArc(SKCanvas canvas, GaugeGeometry geometry, float startAngle, float sweepAngle, SKPaint paint)
-    {
-        var radius = geometry.ArcRadius;
-        using var builder = new SKPathBuilder();
-        builder.AddArc(new SKRect(geometry.CenterX - radius, geometry.CenterY - radius, geometry.CenterX + radius, geometry.CenterY + radius), GaugeScale.ToSkiaAngle(startAngle), sweepAngle);
-        using var path = builder.Detach();
-        canvas.DrawPath(path, paint);
-    }
+    private static void DrawArc(SKCanvas canvas, GaugeGeometry geometry, float startAngle, float sweepAngle, SKPaint paint) =>
+        canvas.DrawArc(new SKPoint(geometry.CenterX, geometry.CenterY), geometry.ArcRadius, AngleHelper.ToSkiaAngle(startAngle), sweepAngle, false, paint);
 
     //--------------------------------------------------------------------------------
     // Scale
@@ -227,12 +228,11 @@ internal sealed class GaugeRenderer : IDisposable
         paint.IsAntialias = true;
         paint.Color = color.ToSKColor();
         paint.StrokeCap = SKStrokeCap.Butt;
-        foreach (var value in scale.GetMarks(interval))
+        var count = scale.GetMarkCount(interval);
+        for (var i = 0; i < count; i++)
         {
-            var angle = scale.ToAngle(value);
-            var (x0, y0) = geometry.GetPoint(angle, innerExtent);
-            var (x1, y1) = geometry.GetPoint(angle, outerExtent);
-            canvas.DrawLine(x0, y0, x1, y1, paint);
+            var angle = scale.ToAngle(scale.GetMark(interval, i));
+            canvas.DrawLine(geometry.GetPoint(angle, innerExtent), geometry.GetPoint(angle, outerExtent), paint);
         }
     }
 
@@ -247,18 +247,42 @@ internal sealed class GaugeRenderer : IDisposable
         paint.IsAntialias = true;
         paint.Color = state.LabelColor.ToSKColor();
         var metrics = fonts.GetMetrics(state.LabelFontSize, false);
-        foreach (var value in scale.GetMarks(state.LabelInterval))
+        var count = scale.GetMarkCount(state.LabelInterval);
+        for (var i = 0; i < count; i++)
         {
-            var text = FormatLabel(state, value);
-            if (String.IsNullOrEmpty(text))
+            var value = scale.GetMark(state.LabelInterval, i);
+            var label = GetFormattedLabel(state, value);
+            if (String.IsNullOrEmpty(label))
             {
                 continue;
             }
 
-            var run = fonts.Shape(text, state.LabelFontSize, false);
-            var (x, y) = geometry.GetPoint(scale.ToAngle(value), state.LabelExtent);
-            GaugeFontResolver.Draw(canvas, run, GaugeTextLayout.CenterStart(x, run.Width), GaugeTextLayout.CenterBaseline(y, metrics.Ascent, metrics.Descent), paint);
+            var point = geometry.GetPoint(scale.ToAngle(value), state.LabelExtent);
+            canvas.DrawText(fonts.CreateText(label, state.LabelFontSize, false), point.X, metrics.GetCenterBaseline(point.Y), SKTextAlign.Center, paint);
         }
+    }
+
+    private string GetFormattedLabel(GaugeRenderState state, double value)
+    {
+        if ((state.LabelFormatter is not null) || (state.LabelConverter is not null))
+        {
+            return FormatLabel(state, value);
+        }
+
+        var key = (state.LabelFormat, CultureInfo.CurrentCulture, state.MinValue, state.MaxValue, state.LabelInterval);
+        if (formattedLabelsKey != key)
+        {
+            formattedLabels.Clear();
+            formattedLabelsKey = key;
+        }
+
+        if (!formattedLabels.TryGetValue(value, out var label))
+        {
+            label = FormatLabel(state, value);
+            formattedLabels[value] = label;
+        }
+
+        return label;
     }
 
     //--------------------------------------------------------------------------------
@@ -274,7 +298,7 @@ internal sealed class GaugeRenderer : IDisposable
 
         var x = geometry.CenterX;
         var y = geometry.CenterY + (geometry.Radius * state.ValueOffsetY);
-        var valueRun = fonts.Shape(FormatValue(state), state.ValueFontSize, false);
+        var valueText = fonts.CreateText(GetFormattedValue(state), state.ValueFontSize, false);
         var valueMetrics = fonts.GetMetrics(state.ValueFontSize, false);
         using var valuePaint = new SKPaint();
         valuePaint.IsAntialias = true;
@@ -282,11 +306,11 @@ internal sealed class GaugeRenderer : IDisposable
         var unit = state.Unit;
         if (String.IsNullOrEmpty(unit))
         {
-            GaugeFontResolver.Draw(canvas, valueRun, GaugeTextLayout.CenterStart(x, valueRun.Width), GaugeTextLayout.CenterBaseline(y, valueMetrics.Ascent, valueMetrics.Descent), valuePaint);
+            canvas.DrawText(valueText, x, valueMetrics.GetCenterBaseline(y), SKTextAlign.Center, valuePaint);
             return;
         }
 
-        var unitRun = fonts.Shape(unit, state.UnitFontSize, false);
+        var unitText = fonts.CreateText(unit, state.UnitFontSize, false);
         var unitMetrics = fonts.GetMetrics(state.UnitFontSize, false);
         using var unitPaint = new SKPaint();
         unitPaint.IsAntialias = true;
@@ -294,15 +318,27 @@ internal sealed class GaugeRenderer : IDisposable
         if (state.UnitPosition == GaugeUnitPosition.Bottom)
         {
             var (valueBaseline, unitBaseline) = GaugeTextLayout.StackBaselines(y, valueMetrics.Ascent, valueMetrics.Descent, unitMetrics.Ascent, unitMetrics.Descent);
-            GaugeFontResolver.Draw(canvas, valueRun, GaugeTextLayout.CenterStart(x, valueRun.Width), valueBaseline, valuePaint);
-            GaugeFontResolver.Draw(canvas, unitRun, GaugeTextLayout.CenterStart(x, unitRun.Width), unitBaseline, unitPaint);
+            canvas.DrawText(valueText, x, valueBaseline, SKTextAlign.Center, valuePaint);
+            canvas.DrawText(unitText, x, unitBaseline, SKTextAlign.Center, unitPaint);
         }
         else
         {
-            var (valueStart, unitStart) = GaugeTextLayout.RowStarts(x, valueRun.Width, unitRun.Width);
-            GaugeFontResolver.Draw(canvas, valueRun, valueStart, GaugeTextLayout.CenterBaseline(y, valueMetrics.Ascent, valueMetrics.Descent), valuePaint);
-            GaugeFontResolver.Draw(canvas, unitRun, unitStart, GaugeTextLayout.CenterBaseline(y, unitMetrics.Ascent, unitMetrics.Descent), unitPaint);
+            var (valueStart, unitStart) = GaugeTextLayout.RowStarts(x, valueText.Width, unitText.Width);
+            canvas.DrawText(valueText, valueStart, valueMetrics.GetCenterBaseline(y), SKTextAlign.Left, valuePaint);
+            canvas.DrawText(unitText, unitStart, unitMetrics.GetCenterBaseline(y), SKTextAlign.Left, unitPaint);
         }
+    }
+
+    private string GetFormattedValue(GaugeRenderState state)
+    {
+        var key = (state.DisplayValue, state.ValueFormat, CultureInfo.CurrentCulture);
+        if (formattedValueKey != key)
+        {
+            formattedValue = FormatValue(state);
+            formattedValueKey = key;
+        }
+
+        return formattedValue;
     }
 
     //--------------------------------------------------------------------------------

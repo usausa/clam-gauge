@@ -43,4 +43,16 @@ public sealed class GaugeTextFormatTests
         // Act & Assert
         Assert.Throws<FormatException>(static () => GaugeTextFormat.Parse("{0:N0"));
     }
+
+    [Fact]
+    public void FormatsParsedFromTheSameTextAreEqual()
+    {
+        // Act & Assert
+        Assert.Equal(GaugeTextFormat.Parse("{0:N0} pcs"), GaugeTextFormat.Parse("{0:N0} pcs"));
+        Assert.Equal(GaugeTextFormat.Parse("{0:N0} pcs").GetHashCode(), GaugeTextFormat.Parse("{0:N0} pcs").GetHashCode());
+        Assert.Equal(GaugeTextFormat.Parse("N0"), GaugeTextFormat.Parse("N0"));
+        Assert.NotEqual(GaugeTextFormat.Parse("N0"), GaugeTextFormat.Parse("N1"));
+        Assert.NotEqual(GaugeTextFormat.Parse("{0:N0}"), GaugeTextFormat.Parse("N0"));
+        Assert.NotEqual(GaugeTextFormat.Default, GaugeTextFormat.Parse("N0"));
+    }
 }

@@ -2,7 +2,7 @@ namespace ClamGauge.Rendering;
 
 using System.Text;
 
-internal sealed class GaugeTextFormat
+internal sealed class GaugeTextFormat : IEquatable<GaugeTextFormat>
 {
     private readonly string? format;
     private readonly CompositeFormat? composite;
@@ -45,4 +45,10 @@ internal sealed class GaugeTextFormat
 
         return value is IFormattable formattable ? formattable.ToString(format, provider) : Convert.ToString(value, provider) ?? String.Empty;
     }
+
+    public bool Equals(GaugeTextFormat? other) => (other is not null) && (format == other.format) && (composite?.Format == other.composite?.Format);
+
+    public override bool Equals(object? obj) => (obj is GaugeTextFormat other) && Equals(other);
+
+    public override int GetHashCode() => HashCode.Combine(format, composite?.Format);
 }

@@ -60,12 +60,13 @@ compass.Value = 135;
 
 The first value is shown at once and later values move the needle over `AnimationDuration` milliseconds.  
 
-Text is drawn with the `sans-serif` system font; characters it lacks are resolved per character through `GaugeFonts`.  
+Text is drawn with the `sans-serif` system font; characters it lacks are resolved per character through `FallbackFonts` of [SkiaExtension](https://github.com/usausa/skia-extension).  
 Set a bundled font as a fallback at startup when the device fonts do not cover the language.  
+The language hints follow the UI language of the device unless `Languages` is set.  
 
 ```csharp
-GaugeFonts.Languages = ["ja"];
-GaugeFonts.Fallbacks = [SKTypeface.FromStream(await FileSystem.OpenAppPackageFileAsync("NotoSansJP-Regular.ttf"))];
+FallbackFonts.Languages = ["ja"];
+FallbackFonts.Typefaces = [SKTypeface.FromStream(await FileSystem.OpenAppPackageFileAsync("NotoSansJP-Regular.ttf"))];
 ```
 
 ## 🎨 Look
@@ -77,7 +78,7 @@ GaugeFonts.Fallbacks = [SKTypeface.FromStream(await FileSystem.OpenAppPackageFil
 | Arc | `ArcInnerExtent` / `ArcOuterExtent`, `ArcTrackColor`, `ArcStartColor` / `ArcEndColor`, or colored `Ranges` |
 | Scale | Major and minor ticks, `LabelInterval`, `LabelFormat`, `LabelConverter`, `LabelFormatter` |
 | Center value | `ValueVisible`, `ValueFormat`, `Unit` on the right or below (`UnitPosition`), `ValueOffsetY` |
-| Text | `FontFamily` of the labels, the value and the unit, with per character fallback through `GaugeFonts` |
+| Text | `FontFamily` of the labels, the value and the unit, with per character fallback through `FallbackFonts` of SkiaExtension |
 | Needle | Length, widths and two side colors, pivot, `AnimationDuration`, `AnimationEasing` |
 
 Angles are degrees clockwise from 12 o'clock and extents are fractions of the radius inside the bezels.  
@@ -147,7 +148,7 @@ public sealed class WeatherViewModel : ObservableObject
 | **Face** | Solid or gradient background, outer and inner gradient bezels |
 | **Value** | Center value with a format, unit on the right or below, vertical offset |
 | **Needle** | Tapered two-tone needle, round pivot, animation with a duration and an easing |
-| **Fonts** | Per character fallback to `GaugeFonts` typefaces and system fonts, emoji sequences included |
+| **Fonts** | Per character fallback to the `FallbackFonts` typefaces of SkiaExtension and system fonts, emoji sequences included |
 
 ## 📖 API
 

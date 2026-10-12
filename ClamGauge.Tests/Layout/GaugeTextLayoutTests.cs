@@ -3,14 +3,6 @@ namespace ClamGauge.Tests.Layout;
 public sealed class GaugeTextLayoutTests
 {
     [Fact]
-    public void SingleLinesAreCenteredOnThePoint()
-    {
-        // Act & Assert
-        Assert.Equal(170, GaugeTextLayout.CenterStart(200, 60));
-        Assert.Equal(107.5f, GaugeTextLayout.CenterBaseline(100, -20, 5));
-    }
-
-    [Fact]
     public void UnitBelowTheValueIsCenteredAsABlock()
     {
         // Act

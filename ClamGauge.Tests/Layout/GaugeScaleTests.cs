@@ -14,30 +14,30 @@ public sealed class GaugeScaleTests
         Assert.Equal(360, scale.ToAngle(50));
         Assert.Equal(495, scale.ToAngle(100));
         Assert.Equal(52.5f, tachometer.ToAngle(6));
-        Assert.Equal(-90, GaugeScale.ToSkiaAngle(0));
     }
 
     [Fact]
     public void MarksStepByTheIntervalUpToTheMaximum()
     {
         // Act & Assert
-        Assert.Equal([0d, 20, 40, 60, 80, 100], new GaugeScale(0, 100, 225, 270).GetMarks(20));
-        Assert.Equal([950d, 970, 990, 1010, 1030, 1050], new GaugeScale(950, 1050, 225, 270).GetMarks(20));
-        Assert.Equal([0d, 3, 6, 9], new GaugeScale(0, 10, 225, 270).GetMarks(3));
-        Assert.Equal([0d, 6], new GaugeScale(0, 10, 225, 270).GetMarks(6));
-        Assert.Equal(33, new GaugeScale(0, 8, -150, 270).GetMarks(0.25).Count);
-        Assert.Empty(new GaugeScale(0, 100, 225, 270).GetMarks(0));
-        Assert.Empty(new GaugeScale(0, 100, 225, 270).GetMarks(-5));
+        Assert.Equal([0d, 20, 40, 60, 80, 100], GetMarks(new GaugeScale(0, 100, 225, 270), 20));
+        Assert.Equal([950d, 970, 990, 1010, 1030, 1050], GetMarks(new GaugeScale(950, 1050, 225, 270), 20));
+        Assert.Equal([0d, 3, 6, 9], GetMarks(new GaugeScale(0, 10, 225, 270), 3));
+        Assert.Equal([0d, 6], GetMarks(new GaugeScale(0, 10, 225, 270), 6));
+        Assert.Equal([0d], GetMarks(new GaugeScale(0, 10, 225, 270), 30));
+        Assert.Equal(33, new GaugeScale(0, 8, -150, 270).GetMarkCount(0.25));
+        Assert.Equal(0, new GaugeScale(0, 100, 225, 270).GetMarkCount(0));
+        Assert.Equal(0, new GaugeScale(0, 100, 225, 270).GetMarkCount(-5));
     }
 
     [Fact]
     public void LastMarkOvershootingByRoundingIsClampedToTheMaximum()
     {
         // Act
-        var marks = new GaugeScale(0, 0.3, 225, 270).GetMarks(0.1);
+        var marks = GetMarks(new GaugeScale(0, 0.3, 225, 270), 0.1);
 
         // Assert
-        Assert.Equal(4, marks.Count);
+        Assert.Equal(4, marks.Length);
         Assert.Equal(0.3, marks[^1]);
     }
 
@@ -57,5 +57,16 @@ public sealed class GaugeScaleTests
         Assert.False(scale.TryGetArc(60, 40, out _, out _));
         Assert.False(scale.TryGetArc(120, 150, out _, out _));
         Assert.False(new GaugeScale(0, 100, 225, -270).TryGetArc(0, 50, out _, out _));
+    }
+
+    private static double[] GetMarks(GaugeScale scale, double interval)
+    {
+        var marks = new double[scale.GetMarkCount(interval)];
+        for (var i = 0; i < marks.Length; i++)
+        {
+            marks[i] = scale.GetMark(interval, i);
+        }
+
+        return marks;
     }
 }

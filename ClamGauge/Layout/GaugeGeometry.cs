@@ -1,6 +1,10 @@
 namespace ClamGauge.Layout;
 
-internal sealed class GaugeGeometry
+using SkiaExtension;
+
+using SkiaSharp;
+
+internal readonly record struct GaugeGeometry
 {
     public float CenterX { get; }
 
@@ -24,9 +28,5 @@ internal sealed class GaugeGeometry
         ArcThickness = Radius * (arcOuterExtent - arcInnerExtent);
     }
 
-    public (float X, float Y) GetPoint(float angle, float extent)
-    {
-        var radian = MathF.PI * GaugeScale.ToSkiaAngle(angle) / 180f;
-        return (CenterX + (Radius * extent * MathF.Cos(radian)), CenterY + (Radius * extent * MathF.Sin(radian)));
-    }
+    public SKPoint GetPoint(float angle, float extent) => AngleHelper.GetPoint(new SKPoint(CenterX, CenterY), Radius * extent, AngleHelper.ToSkiaAngle(angle));
 }

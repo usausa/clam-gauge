@@ -42,7 +42,7 @@ public sealed class GaugeGeometryTests
         AssertPoint(100, 0, geometry.GetPoint(360, 1));
     }
 
-    private static void AssertPoint(float x, float y, (float X, float Y) point)
+    private static void AssertPoint(float x, float y, SkiaSharp.SKPoint point)
     {
         Assert.Equal(x, point.X, 3);
         Assert.Equal(y, point.Y, 3);

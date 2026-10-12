@@ -80,7 +80,7 @@ Labels with empty text are skipped.
 
 | Name | Type | Default | Bindable | Description |
 |---|---|---|:-:|---|
-| `FontFamily` | `string` | `sans-serif` | ✓ | Primary font of the labels, the value and the unit; missing characters are resolved through `GaugeFonts` |
+| `FontFamily` | `string` | `sans-serif` | ✓ | Primary font of the labels, the value and the unit; missing characters are resolved through `FallbackFonts` of SkiaExtension |
 
 #### Needle
 
@@ -109,21 +109,15 @@ The center value shows the animated value as it is, while the needle stops at th
 
 `PaintSurface` of `SKCanvasView` is raised after the gauge is drawn, with the canvas in pixels.  
 
-## 🔤 GaugeFonts
+## 🔤 Fonts
 
-Global font fallback settings, read when a view creates its renderer.  
-Set them at startup, before the first view is shown.  
-Emoji presentation sequences (a character followed by U+FE0F) are matched against the emoji font first.  
-Variation selectors and zero width joiners only steer the font choice and are not drawn.  
-
-| Name | Type | Default | Description |
-|---|---|---|---|
-| `Languages` | `IReadOnlyList<string>` | `["ja"]` | BCP-47 tags for the per character system font lookup; the tag selects the glyph variant of shared CJK ideographs |
-| `Fallbacks` | `IReadOnlyList<SKTypeface>` | `[]` | Typefaces tried before the system lookup, for example a bundled font; they stay owned by the caller |
+Per character font fallback comes from [SkiaExtension](https://github.com/usausa/skia-extension).  
+Configure it with `FallbackFonts` in the `SkiaExtension` namespace at startup, before the first view is shown.  
+`Languages` defaults to the UI language of the device.  
 
 ```csharp
-GaugeFonts.Languages = ["ja", "en"];
-GaugeFonts.Fallbacks = [SKTypeface.FromStream(await FileSystem.OpenAppPackageFileAsync("NotoSansJP-Regular.ttf"))];
+FallbackFonts.Languages = ["ja", "en"];
+FallbackFonts.Typefaces = [SKTypeface.FromStream(await FileSystem.OpenAppPackageFileAsync("NotoSansJP-Regular.ttf"))];
 ```
 
 ## 🎨 GaugeRange
