@@ -1,36 +1,36 @@
 namespace ClamGauge;
 
-public sealed partial class ClamGaugeView
+public partial class ClamGaugeView
 {
-    public static readonly BindableProperty NeedleEndExtentProperty = BindableProperty.Create(nameof(NeedleEndExtent), typeof(float), typeof(ClamGaugeView), 0.75f, propertyChanged: OnRenderInputChanged);
-    public static readonly BindableProperty NeedleStartWidthProperty = BindableProperty.Create(nameof(NeedleStartWidth), typeof(float), typeof(ClamGaugeView), 10f, propertyChanged: OnRenderInputChanged);
-    public static readonly BindableProperty NeedleEndWidthProperty = BindableProperty.Create(nameof(NeedleEndWidth), typeof(float), typeof(ClamGaugeView), 2f, propertyChanged: OnRenderInputChanged);
+    public static readonly BindableProperty NeedleEndExtentProperty = BindableProperty.Create(nameof(NeedleEndExtent), typeof(double), typeof(ClamGaugeView), 0.75d, validateValue: static (_, value) => ValidateNonNegative(value, nameof(NeedleEndExtent)), propertyChanged: OnRenderInputChanged);
+    public static readonly BindableProperty NeedleStartWidthProperty = BindableProperty.Create(nameof(NeedleStartWidth), typeof(double), typeof(ClamGaugeView), 10d, validateValue: static (_, value) => ValidateNonNegative(value, nameof(NeedleStartWidth)), propertyChanged: OnRenderInputChanged);
+    public static readonly BindableProperty NeedleEndWidthProperty = BindableProperty.Create(nameof(NeedleEndWidth), typeof(double), typeof(ClamGaugeView), 2d, validateValue: static (_, value) => ValidateNonNegative(value, nameof(NeedleEndWidth)), propertyChanged: OnRenderInputChanged);
     public static readonly BindableProperty NeedleLeftColorProperty = BindableProperty.Create(nameof(NeedleLeftColor), typeof(Color), typeof(ClamGaugeView), Color.FromArgb("#CC2828"), propertyChanged: OnRenderInputChanged);
     public static readonly BindableProperty NeedleRightColorProperty = BindableProperty.Create(nameof(NeedleRightColor), typeof(Color), typeof(ClamGaugeView), Color.FromArgb("#EE3C3C"), propertyChanged: OnRenderInputChanged);
-    public static readonly BindableProperty PivotRadiusProperty = BindableProperty.Create(nameof(PivotRadius), typeof(float), typeof(ClamGaugeView), 8f, propertyChanged: OnRenderInputChanged);
+    public static readonly BindableProperty PivotRadiusProperty = BindableProperty.Create(nameof(PivotRadius), typeof(double), typeof(ClamGaugeView), 8d, validateValue: static (_, value) => ValidateNonNegative(value, nameof(PivotRadius)), propertyChanged: OnRenderInputChanged);
     public static readonly BindableProperty PivotColorProperty = BindableProperty.Create(nameof(PivotColor), typeof(Color), typeof(ClamGaugeView), Color.FromArgb("#CC2828"), propertyChanged: OnRenderInputChanged);
-    public static readonly BindableProperty AnimationDurationProperty = BindableProperty.Create(nameof(AnimationDuration), typeof(int), typeof(ClamGaugeView), 300);
+    public static readonly BindableProperty AnimationDurationProperty = BindableProperty.Create(nameof(AnimationDuration), typeof(int), typeof(ClamGaugeView), 300, validateValue: static (_, value) => ValidateDuration(value, nameof(AnimationDuration)));
     public static readonly BindableProperty AnimationEasingProperty = BindableProperty.Create(nameof(AnimationEasing), typeof(Easing), typeof(ClamGaugeView), Easing.CubicOut);
 
     private const string NeedleAnimationName = "ClamGaugeViewNeedle";
 
     private bool displayValueInitialized;
 
-    public float NeedleEndExtent
+    public double NeedleEndExtent
     {
-        get => (float)GetValue(NeedleEndExtentProperty);
+        get => (double)GetValue(NeedleEndExtentProperty);
         set => SetValue(NeedleEndExtentProperty, value);
     }
 
-    public float NeedleStartWidth
+    public double NeedleStartWidth
     {
-        get => (float)GetValue(NeedleStartWidthProperty);
+        get => (double)GetValue(NeedleStartWidthProperty);
         set => SetValue(NeedleStartWidthProperty, value);
     }
 
-    public float NeedleEndWidth
+    public double NeedleEndWidth
     {
-        get => (float)GetValue(NeedleEndWidthProperty);
+        get => (double)GetValue(NeedleEndWidthProperty);
         set => SetValue(NeedleEndWidthProperty, value);
     }
 
@@ -46,9 +46,9 @@ public sealed partial class ClamGaugeView
         set => SetValue(NeedleRightColorProperty, value);
     }
 
-    public float PivotRadius
+    public double PivotRadius
     {
-        get => (float)GetValue(PivotRadiusProperty);
+        get => (double)GetValue(PivotRadiusProperty);
         set => SetValue(PivotRadiusProperty, value);
     }
 
@@ -77,7 +77,7 @@ public sealed partial class ClamGaugeView
 
     private void MoveNeedle(double value)
     {
-        if (!displayValueInitialized || (AnimationDuration <= 0) || (Handler is null))
+        if (disposed || !displayValueInitialized || (AnimationDuration <= 0) || (Handler is null))
         {
             displayValueInitialized = true;
             this.AbortAnimation(NeedleAnimationName);

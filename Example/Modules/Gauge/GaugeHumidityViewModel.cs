@@ -19,7 +19,7 @@ public sealed partial class GaugeHumidityViewModel : GaugeViewModelBase
     ];
 
     [ObservableProperty]
-    public partial Color GaugeBackgroundColor { get; set; } = Backgrounds[0];
+    public partial Color GaugeBackgroundStartColor { get; set; } = Backgrounds[0];
 
     [ObservableProperty]
     public partial IReadOnlyList<GaugeRange> Ranges { get; set; } = Bands;
@@ -70,6 +70,6 @@ public sealed partial class GaugeHumidityViewModel : GaugeViewModelBase
 
     private void SelectBackground(Color color)
     {
-        GaugeBackgroundColor = color;
+        GaugeBackgroundStartColor = color;
     }
 }

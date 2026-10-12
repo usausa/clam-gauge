@@ -7,18 +7,21 @@ using ClamGauge.Rendering;
 using SkiaSharp.Views.Maui;
 using SkiaSharp.Views.Maui.Controls;
 
-public sealed partial class ClamGaugeView : SKCanvasView
+public partial class ClamGaugeView : SKCanvasView, IDisposable
 {
     public static readonly BindableProperty ValueProperty = BindableProperty.Create(nameof(Value), typeof(double), typeof(ClamGaugeView), 0d, propertyChanged: OnValueChanged);
     public static readonly BindableProperty MinValueProperty = BindableProperty.Create(nameof(MinValue), typeof(double), typeof(ClamGaugeView), 0d, propertyChanged: OnRenderInputChanged);
     public static readonly BindableProperty MaxValueProperty = BindableProperty.Create(nameof(MaxValue), typeof(double), typeof(ClamGaugeView), 100d, propertyChanged: OnRenderInputChanged);
-    public static readonly BindableProperty StartAngleProperty = BindableProperty.Create(nameof(StartAngle), typeof(float), typeof(ClamGaugeView), 225f, propertyChanged: OnRenderInputChanged);
-    public static readonly BindableProperty SweepAngleProperty = BindableProperty.Create(nameof(SweepAngle), typeof(float), typeof(ClamGaugeView), 270f, propertyChanged: OnRenderInputChanged);
+    public static readonly BindableProperty StartAngleProperty = BindableProperty.Create(nameof(StartAngle), typeof(double), typeof(ClamGaugeView), 225d, validateValue: static (_, value) => ValidateFinite(value, nameof(StartAngle)), propertyChanged: OnRenderInputChanged);
+    public static readonly BindableProperty SweepAngleProperty = BindableProperty.Create(nameof(SweepAngle), typeof(double), typeof(ClamGaugeView), 270d, validateValue: static (_, value) => ValidateFinite(value, nameof(SweepAngle)), propertyChanged: OnRenderInputChanged);
     public static readonly BindableProperty RangesProperty = BindableProperty.Create(nameof(Ranges), typeof(IList<GaugeRange>), typeof(ClamGaugeView), defaultValueCreator: static _ => new ObservableCollection<GaugeRange>(), propertyChanged: OnRangesChanged);
     public static readonly BindableProperty FontFamilyProperty = BindableProperty.Create(nameof(FontFamily), typeof(string), typeof(ClamGaugeView), "sans-serif", propertyChanged: OnFontFamilyChanged);
 
     private readonly GaugeCollectionWatcher rangesWatcher;
     private GaugeRenderer? renderer;
+    private GaugeTextFormat? labelFormat;
+    private GaugeTextFormat? valueFormat;
+    private bool disposed;
 
 #pragma warning disable CA1721
     public double Value
@@ -40,15 +43,15 @@ public sealed partial class ClamGaugeView : SKCanvasView
         set => SetValue(MaxValueProperty, value);
     }
 
-    public float StartAngle
+    public double StartAngle
     {
-        get => (float)GetValue(StartAngleProperty);
+        get => (double)GetValue(StartAngleProperty);
         set => SetValue(StartAngleProperty, value);
     }
 
-    public float SweepAngle
+    public double SweepAngle
     {
-        get => (float)GetValue(SweepAngleProperty);
+        get => (double)GetValue(SweepAngleProperty);
         set => SetValue(SweepAngleProperty, value);
     }
 
@@ -76,6 +79,26 @@ public sealed partial class ClamGaugeView : SKCanvasView
     // Lifecycle
     //--------------------------------------------------------------------------------
 
+    public void Dispose()
+    {
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
+
+    protected virtual void Dispose(bool disposing)
+    {
+        if (!disposing || disposed)
+        {
+            return;
+        }
+
+        disposed = true;
+        CompleteNeedleAnimation();
+        rangesWatcher.Deactivate();
+        renderer?.Dispose();
+        renderer = null;
+    }
+
     protected override void OnHandlerChanging(HandlerChangingEventArgs args)
     {
         rangesWatcher.Deactivate();
@@ -92,7 +115,7 @@ public sealed partial class ClamGaugeView : SKCanvasView
     protected override void OnHandlerChanged()
     {
         base.OnHandlerChanged();
-        if (Handler is not null)
+        if (!disposed && (Handler is not null))
         {
             rangesWatcher.Activate();
         }
@@ -106,7 +129,7 @@ public sealed partial class ClamGaugeView : SKCanvasView
 
     protected override void OnPaintSurface(SKPaintSurfaceEventArgs e)
     {
-        if ((Width <= 0) || (Height <= 0))
+        if (disposed || (Width <= 0) || (Height <= 0))
         {
             e.Surface.Canvas.Clear();
             return;
@@ -133,54 +156,54 @@ public sealed partial class ClamGaugeView : SKCanvasView
         DisplayValue = DisplayValue,
         MinValue = MinValue,
         MaxValue = MaxValue,
-        StartAngle = StartAngle,
-        SweepAngle = SweepAngle,
+        StartAngle = (float)StartAngle,
+        SweepAngle = (float)SweepAngle,
         Ranges = Ranges,
-        GaugeBackgroundColor = GaugeBackgroundColor,
-        GaugeBackgroundColor2 = GaugeBackgroundColor2,
-        BezelOuterThickness = BezelOuterThickness,
+        GaugeBackgroundStartColor = GaugeBackgroundStartColor,
+        GaugeBackgroundEndColor = GaugeBackgroundEndColor,
+        BezelOuterThickness = (float)BezelOuterThickness,
         BezelOuterStartColor = BezelOuterStartColor,
         BezelOuterEndColor = BezelOuterEndColor,
-        BezelInnerThickness = BezelInnerThickness,
+        BezelInnerThickness = (float)BezelInnerThickness,
         BezelInnerStartColor = BezelInnerStartColor,
         BezelInnerEndColor = BezelInnerEndColor,
-        ArcInnerExtent = ArcInnerExtent,
-        ArcOuterExtent = ArcOuterExtent,
+        ArcInnerExtent = (float)ArcInnerExtent,
+        ArcOuterExtent = (float)ArcOuterExtent,
         ArcTrackColor = ArcTrackColor,
         ArcStartColor = ArcStartColor,
         ArcEndColor = ArcEndColor,
         MajorTickInterval = MajorTickInterval,
-        MajorTickInnerExtent = MajorTickInnerExtent,
-        MajorTickOuterExtent = MajorTickOuterExtent,
-        MajorTickThickness = MajorTickThickness,
+        MajorTickInnerExtent = (float)MajorTickInnerExtent,
+        MajorTickOuterExtent = (float)MajorTickOuterExtent,
+        MajorTickThickness = (float)MajorTickThickness,
         MajorTickColor = MajorTickColor,
         MinorTickInterval = MinorTickInterval,
-        MinorTickInnerExtent = MinorTickInnerExtent,
-        MinorTickOuterExtent = MinorTickOuterExtent,
-        MinorTickThickness = MinorTickThickness,
+        MinorTickInnerExtent = (float)MinorTickInnerExtent,
+        MinorTickOuterExtent = (float)MinorTickOuterExtent,
+        MinorTickThickness = (float)MinorTickThickness,
         MinorTickColor = MinorTickColor,
         LabelInterval = LabelInterval,
-        LabelExtent = LabelExtent,
-        LabelFormat = LabelFormat,
+        LabelExtent = (float)LabelExtent,
+        LabelFormat = labelFormat ??= GaugeTextFormat.Parse(LabelFormat),
         LabelConverter = LabelConverter,
         LabelFormatter = LabelFormatter,
-        LabelFontSize = LabelFontSize,
+        LabelFontSize = (float)LabelFontSize,
         LabelColor = LabelColor,
-        ShowValue = ShowValue,
-        ValueFormat = ValueFormat,
-        ValueFontSize = ValueFontSize,
+        ValueVisible = ValueVisible,
+        ValueFormat = valueFormat ??= GaugeTextFormat.Parse(ValueFormat),
+        ValueFontSize = (float)ValueFontSize,
         ValueColor = ValueColor,
         Unit = Unit,
-        UnitFontSize = UnitFontSize,
+        UnitFontSize = (float)UnitFontSize,
         UnitColor = UnitColor,
         UnitPosition = UnitPosition,
-        ValueOffsetY = ValueOffsetY,
-        NeedleEndExtent = NeedleEndExtent,
-        NeedleStartWidth = NeedleStartWidth,
-        NeedleEndWidth = NeedleEndWidth,
+        ValueOffsetY = (float)ValueOffsetY,
+        NeedleEndExtent = (float)NeedleEndExtent,
+        NeedleStartWidth = (float)NeedleStartWidth,
+        NeedleEndWidth = (float)NeedleEndWidth,
         NeedleLeftColor = NeedleLeftColor,
         NeedleRightColor = NeedleRightColor,
-        PivotRadius = PivotRadius,
+        PivotRadius = (float)PivotRadius,
         PivotColor = PivotColor
     };
 
@@ -201,4 +224,30 @@ public sealed partial class ClamGaugeView : SKCanvasView
         view.renderer = null;
         view.InvalidateSurface();
     }
+
+    private static void OnLabelFormatChanged(BindableObject bindable, object oldValue, object newValue)
+    {
+        var view = (ClamGaugeView)bindable;
+        view.labelFormat = null;
+        view.InvalidateSurface();
+    }
+
+    private static void OnValueFormatChanged(BindableObject bindable, object oldValue, object newValue)
+    {
+        var view = (ClamGaugeView)bindable;
+        view.valueFormat = null;
+        view.InvalidateSurface();
+    }
+
+    private static bool ValidateFinite(object? value, string name) =>
+        ((value is double number) && Double.IsFinite(number)) ? true : throw new ArgumentOutOfRangeException(name, value, "The value must be a finite value.");
+
+    private static bool ValidatePositive(object? value, string name) =>
+        ((value is double number) && Double.IsFinite(number) && (number > 0)) ? true : throw new ArgumentOutOfRangeException(name, value, "The value must be a positive finite value.");
+
+    private static bool ValidateNonNegative(object? value, string name) =>
+        ((value is double number) && Double.IsFinite(number) && (number >= 0)) ? true : throw new ArgumentOutOfRangeException(name, value, "The value must be a finite value of zero or more.");
+
+    private static bool ValidateDuration(object? value, string name) =>
+        ((value is int number) && (number >= 0)) ? true : throw new ArgumentOutOfRangeException(name, value, "The value must be zero or more.");
 }

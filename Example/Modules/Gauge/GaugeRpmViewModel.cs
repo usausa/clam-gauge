@@ -7,19 +7,19 @@ public sealed partial class GaugeRpmViewModel : GaugeViewModelBase
     private bool wideNeedle;
 
     [ObservableProperty]
-    public partial bool ShowValue { get; set; }
+    public partial bool ValueVisible { get; set; }
 
     [ObservableProperty]
-    public partial float StartAngle { get; set; } = -150;
+    public partial double StartAngle { get; set; } = -150;
 
     [ObservableProperty]
-    public partial float NeedleEndExtent { get; set; } = 0.94f;
+    public partial double NeedleEndExtent { get; set; } = 0.94;
 
     [ObservableProperty]
-    public partial float NeedleStartWidth { get; set; } = 8;
+    public partial double NeedleStartWidth { get; set; } = 8;
 
     [ObservableProperty]
-    public partial float NeedleEndWidth { get; set; } = 2;
+    public partial double NeedleEndWidth { get; set; } = 2;
 
     [ObservableProperty]
     public partial Color NeedleLeftColor { get; set; } = Color.FromArgb("#CC4400");
@@ -45,7 +45,7 @@ public sealed partial class GaugeRpmViewModel : GaugeViewModelBase
 
     protected override Task OnNotifyFunction2()
     {
-        ShowValue = !ShowValue;
+        ValueVisible = !ValueVisible;
         return Task.CompletedTask;
     }
 
@@ -59,7 +59,7 @@ public sealed partial class GaugeRpmViewModel : GaugeViewModelBase
     protected override Task OnNotifyFunction4()
     {
         wideNeedle = !wideNeedle;
-        NeedleEndExtent = wideNeedle ? 0.72f : 0.94f;
+        NeedleEndExtent = wideNeedle ? 0.72 : 0.94;
         NeedleStartWidth = wideNeedle ? 16 : 8;
         NeedleEndWidth = wideNeedle ? 6 : 2;
         NeedleLeftColor = Color.FromArgb(wideNeedle ? "#B0B0B8" : "#CC4400");

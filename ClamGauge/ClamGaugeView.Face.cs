@@ -1,36 +1,36 @@
 namespace ClamGauge;
 
-public sealed partial class ClamGaugeView
+public partial class ClamGaugeView
 {
-    public static readonly BindableProperty GaugeBackgroundColorProperty = BindableProperty.Create(nameof(GaugeBackgroundColor), typeof(Color), typeof(ClamGaugeView), Colors.Transparent, propertyChanged: OnRenderInputChanged);
-    public static readonly BindableProperty GaugeBackgroundColor2Property = BindableProperty.Create(nameof(GaugeBackgroundColor2), typeof(Color), typeof(ClamGaugeView), Colors.Transparent, propertyChanged: OnRenderInputChanged);
-    public static readonly BindableProperty BezelOuterThicknessProperty = BindableProperty.Create(nameof(BezelOuterThickness), typeof(float), typeof(ClamGaugeView), 4f, propertyChanged: OnRenderInputChanged);
+    public static readonly BindableProperty GaugeBackgroundStartColorProperty = BindableProperty.Create(nameof(GaugeBackgroundStartColor), typeof(Color), typeof(ClamGaugeView), Colors.Transparent, propertyChanged: OnRenderInputChanged);
+    public static readonly BindableProperty GaugeBackgroundEndColorProperty = BindableProperty.Create(nameof(GaugeBackgroundEndColor), typeof(Color), typeof(ClamGaugeView), Colors.Transparent, propertyChanged: OnRenderInputChanged);
+    public static readonly BindableProperty BezelOuterThicknessProperty = BindableProperty.Create(nameof(BezelOuterThickness), typeof(double), typeof(ClamGaugeView), 4d, validateValue: static (_, value) => ValidateNonNegative(value, nameof(BezelOuterThickness)), propertyChanged: OnRenderInputChanged);
     public static readonly BindableProperty BezelOuterStartColorProperty = BindableProperty.Create(nameof(BezelOuterStartColor), typeof(Color), typeof(ClamGaugeView), Color.FromArgb("#E8EEF8"), propertyChanged: OnRenderInputChanged);
     public static readonly BindableProperty BezelOuterEndColorProperty = BindableProperty.Create(nameof(BezelOuterEndColor), typeof(Color), typeof(ClamGaugeView), Color.FromArgb("#6878A0"), propertyChanged: OnRenderInputChanged);
-    public static readonly BindableProperty BezelInnerThicknessProperty = BindableProperty.Create(nameof(BezelInnerThickness), typeof(float), typeof(ClamGaugeView), 2f, propertyChanged: OnRenderInputChanged);
+    public static readonly BindableProperty BezelInnerThicknessProperty = BindableProperty.Create(nameof(BezelInnerThickness), typeof(double), typeof(ClamGaugeView), 2d, validateValue: static (_, value) => ValidateNonNegative(value, nameof(BezelInnerThickness)), propertyChanged: OnRenderInputChanged);
     public static readonly BindableProperty BezelInnerStartColorProperty = BindableProperty.Create(nameof(BezelInnerStartColor), typeof(Color), typeof(ClamGaugeView), Color.FromArgb("#4A5A88"), propertyChanged: OnRenderInputChanged);
     public static readonly BindableProperty BezelInnerEndColorProperty = BindableProperty.Create(nameof(BezelInnerEndColor), typeof(Color), typeof(ClamGaugeView), Color.FromArgb("#C0D0E8"), propertyChanged: OnRenderInputChanged);
-    public static readonly BindableProperty ArcInnerExtentProperty = BindableProperty.Create(nameof(ArcInnerExtent), typeof(float), typeof(ClamGaugeView), 0.77f, propertyChanged: OnRenderInputChanged);
-    public static readonly BindableProperty ArcOuterExtentProperty = BindableProperty.Create(nameof(ArcOuterExtent), typeof(float), typeof(ClamGaugeView), 0.87f, propertyChanged: OnRenderInputChanged);
+    public static readonly BindableProperty ArcInnerExtentProperty = BindableProperty.Create(nameof(ArcInnerExtent), typeof(double), typeof(ClamGaugeView), 0.77d, validateValue: static (_, value) => ValidateNonNegative(value, nameof(ArcInnerExtent)), propertyChanged: OnRenderInputChanged);
+    public static readonly BindableProperty ArcOuterExtentProperty = BindableProperty.Create(nameof(ArcOuterExtent), typeof(double), typeof(ClamGaugeView), 0.87d, validateValue: static (_, value) => ValidateNonNegative(value, nameof(ArcOuterExtent)), propertyChanged: OnRenderInputChanged);
     public static readonly BindableProperty ArcTrackColorProperty = BindableProperty.Create(nameof(ArcTrackColor), typeof(Color), typeof(ClamGaugeView), Color.FromArgb("#20000000"), propertyChanged: OnRenderInputChanged);
     public static readonly BindableProperty ArcStartColorProperty = BindableProperty.Create(nameof(ArcStartColor), typeof(Color), typeof(ClamGaugeView), Colors.DodgerBlue, propertyChanged: OnRenderInputChanged);
     public static readonly BindableProperty ArcEndColorProperty = BindableProperty.Create(nameof(ArcEndColor), typeof(Color), typeof(ClamGaugeView), Colors.DodgerBlue, propertyChanged: OnRenderInputChanged);
 
-    public Color GaugeBackgroundColor
+    public Color GaugeBackgroundStartColor
     {
-        get => (Color)GetValue(GaugeBackgroundColorProperty);
-        set => SetValue(GaugeBackgroundColorProperty, value);
+        get => (Color)GetValue(GaugeBackgroundStartColorProperty);
+        set => SetValue(GaugeBackgroundStartColorProperty, value);
     }
 
-    public Color GaugeBackgroundColor2
+    public Color GaugeBackgroundEndColor
     {
-        get => (Color)GetValue(GaugeBackgroundColor2Property);
-        set => SetValue(GaugeBackgroundColor2Property, value);
+        get => (Color)GetValue(GaugeBackgroundEndColorProperty);
+        set => SetValue(GaugeBackgroundEndColorProperty, value);
     }
 
-    public float BezelOuterThickness
+    public double BezelOuterThickness
     {
-        get => (float)GetValue(BezelOuterThicknessProperty);
+        get => (double)GetValue(BezelOuterThicknessProperty);
         set => SetValue(BezelOuterThicknessProperty, value);
     }
 
@@ -46,9 +46,9 @@ public sealed partial class ClamGaugeView
         set => SetValue(BezelOuterEndColorProperty, value);
     }
 
-    public float BezelInnerThickness
+    public double BezelInnerThickness
     {
-        get => (float)GetValue(BezelInnerThicknessProperty);
+        get => (double)GetValue(BezelInnerThicknessProperty);
         set => SetValue(BezelInnerThicknessProperty, value);
     }
 
@@ -64,15 +64,15 @@ public sealed partial class ClamGaugeView
         set => SetValue(BezelInnerEndColorProperty, value);
     }
 
-    public float ArcInnerExtent
+    public double ArcInnerExtent
     {
-        get => (float)GetValue(ArcInnerExtentProperty);
+        get => (double)GetValue(ArcInnerExtentProperty);
         set => SetValue(ArcInnerExtentProperty, value);
     }
 
-    public float ArcOuterExtent
+    public double ArcOuterExtent
     {
-        get => (float)GetValue(ArcOuterExtentProperty);
+        get => (double)GetValue(ArcOuterExtentProperty);
         set => SetValue(ArcOuterExtentProperty, value);
     }
 

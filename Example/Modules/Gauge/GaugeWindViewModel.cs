@@ -17,7 +17,7 @@ public sealed partial class GaugeWindViewModel : GaugeViewModelBase
     public partial double LabelInterval { get; set; } = 90;
 
     [ObservableProperty]
-    public partial bool ShowValue { get; set; }
+    public partial bool ValueVisible { get; set; }
 
     [ObservableProperty]
     public partial int AnimationDuration { get; set; }
@@ -56,7 +56,7 @@ public sealed partial class GaugeWindViewModel : GaugeViewModelBase
 
     protected override Task OnNotifyFunction4()
     {
-        ShowValue = !ShowValue;
+        ValueVisible = !ValueVisible;
         return Task.CompletedTask;
     }
 }

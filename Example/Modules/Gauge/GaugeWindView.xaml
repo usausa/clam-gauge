@@ -25,7 +25,7 @@
                             Value="{Binding Value}"
                             AnimationDuration="{Binding AnimationDuration}"
                             ArcEndColor="Transparent" ArcStartColor="Transparent" ArcTrackColor="Transparent" BezelInnerThickness="0"
-                            BezelOuterEndColor="#252525" BezelOuterStartColor="#252525" BezelOuterThickness="6" GaugeBackgroundColor="#383838"
+                            BezelOuterEndColor="#252525" BezelOuterStartColor="#252525" BezelOuterThickness="6" GaugeBackgroundStartColor="#383838"
                             LabelColor="White"
                             LabelConverter="{Binding LabelConverter}"
                             LabelExtent="0.90" LabelFontSize="28"
@@ -34,10 +34,9 @@
                             MajorTickThickness="2" MaxValue="360" MinValue="0" MinorTickColor="#C0C0C0"
                             MinorTickInnerExtent="0.66" MinorTickInterval="22.5" MinorTickOuterExtent="0.78" NeedleEndExtent="0.54"
                             NeedleLeftColor="#CC2020" NeedleRightColor="#E03030" NeedleStartWidth="12" PivotColor="#CC2020"
-                            PivotRadius="10"
-                            ShowValue="{Binding ShowValue}"
-                            StartAngle="0" SweepAngle="360" ValueColor="White" ValueFontSize="24"
-                            ValueFormat="{}{0:N0}°">
+                            PivotRadius="10" StartAngle="0" SweepAngle="360" ValueColor="White"
+                            ValueFontSize="24" ValueFormat="{}{0:N0}°"
+                            ValueVisible="{Binding ValueVisible}">
             <clam:ClamGaugeView.GestureRecognizers>
                 <TapGestureRecognizer Command="{Binding RandomCommand}" />
             </clam:ClamGaugeView.GestureRecognizers>

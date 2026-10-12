@@ -14,9 +14,9 @@ internal sealed class GaugeRenderState
 
     public required IList<GaugeRange> Ranges { get; init; }
 
-    public required Color GaugeBackgroundColor { get; init; }
+    public required Color GaugeBackgroundStartColor { get; init; }
 
-    public required Color GaugeBackgroundColor2 { get; init; }
+    public required Color GaugeBackgroundEndColor { get; init; }
 
     public required float BezelOuterThickness { get; init; }
 
@@ -64,7 +64,7 @@ internal sealed class GaugeRenderState
 
     public required float LabelExtent { get; init; }
 
-    public required string LabelFormat { get; init; }
+    public required GaugeTextFormat LabelFormat { get; init; }
 
     public required IValueConverter? LabelConverter { get; init; }
 
@@ -74,9 +74,9 @@ internal sealed class GaugeRenderState
 
     public required Color LabelColor { get; init; }
 
-    public required bool ShowValue { get; init; }
+    public required bool ValueVisible { get; init; }
 
-    public required string ValueFormat { get; init; }
+    public required GaugeTextFormat ValueFormat { get; init; }
 
     public required float ValueFontSize { get; init; }
 

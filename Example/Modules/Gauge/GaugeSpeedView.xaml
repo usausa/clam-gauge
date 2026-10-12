@@ -25,8 +25,8 @@
             <Setter Property="MinValue" Value="0" />
             <Setter Property="MaxValue" Value="200" />
             <Setter Property="ValueColor" Value="#1A2E48" />
-            <Setter Property="GaugeBackgroundColor" Value="#5070A0" />
-            <Setter Property="GaugeBackgroundColor2" Value="#E4F2FC" />
+            <Setter Property="GaugeBackgroundStartColor" Value="#5070A0" />
+            <Setter Property="GaugeBackgroundEndColor" Value="#E4F2FC" />
             <Setter Property="BezelOuterThickness" Value="3.5" />
             <Setter Property="BezelOuterStartColor" Value="#D8EEFF" />
             <Setter Property="BezelOuterEndColor" Value="#7888A8" />

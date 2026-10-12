@@ -52,7 +52,7 @@ var compass = new ClamGaugeView
     StartAngle = 0,
     SweepAngle = 360,
     LabelInterval = 90,
-    ShowValue = false,
+    ValueVisible = false,
     LabelFormatter = static value => value switch { 0 => "N", 90 => "E", 180 => "S", 270 => "W", _ => String.Empty }
 };
 compass.Value = 135;
@@ -72,11 +72,11 @@ GaugeFonts.Fallbacks = [SKTypeface.FromStream(await FileSystem.OpenAppPackageFil
 
 | Part | Properties |
 |---|---|
-| Face | `GaugeBackgroundColor`, and `GaugeBackgroundColor2` for a diagonal gradient |
+| Face | `GaugeBackgroundStartColor`, and `GaugeBackgroundEndColor` for a diagonal gradient |
 | Bezels | `BezelOuterThickness` and `BezelInnerThickness` with their gradient colors |
 | Arc | `ArcInnerExtent` / `ArcOuterExtent`, `ArcTrackColor`, `ArcStartColor` / `ArcEndColor`, or colored `Ranges` |
 | Scale | Major and minor ticks, `LabelInterval`, `LabelFormat`, `LabelConverter`, `LabelFormatter` |
-| Center value | `ShowValue`, `ValueFormat`, `Unit` on the right or below (`UnitPosition`), `ValueOffsetY` |
+| Center value | `ValueVisible`, `ValueFormat`, `Unit` on the right or below (`UnitPosition`), `ValueOffsetY` |
 | Text | `FontFamily` of the labels, the value and the unit, with per character fallback through `GaugeFonts` |
 | Needle | Length, widths and two side colors, pivot, `AnimationDuration`, `AnimationEasing` |
 
@@ -89,8 +89,8 @@ A style can hold a whole pattern, ranges included.
 <Style x:Key="SpeedGauge"
        TargetType="clam:ClamGaugeView">
     <Setter Property="MaxValue" Value="200" />
-    <Setter Property="GaugeBackgroundColor" Value="#5070A0" />
-    <Setter Property="GaugeBackgroundColor2" Value="#E4F2FC" />
+    <Setter Property="GaugeBackgroundStartColor" Value="#5070A0" />
+    <Setter Property="GaugeBackgroundEndColor" Value="#E4F2FC" />
     <Setter Property="Unit" Value="km/h" />
     <Setter Property="Ranges">
         <Setter.Value>

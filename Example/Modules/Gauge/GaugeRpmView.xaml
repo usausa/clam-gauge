@@ -25,7 +25,7 @@
                             Value="{Binding Value}"
                             AnimationDuration="1000" ArcInnerExtent="0.80" ArcOuterExtent="0.88" ArcTrackColor="Transparent"
                             BezelInnerThickness="0" BezelOuterEndColor="#505058" BezelOuterStartColor="#D0D0D8" BezelOuterThickness="3.5"
-                            GaugeBackgroundColor="#141414" GaugeBackgroundColor2="#D0D0D8" LabelColor="White" LabelExtent="0.65"
+                            GaugeBackgroundEndColor="#D0D0D8" GaugeBackgroundStartColor="#141414" LabelColor="White" LabelExtent="0.65"
                             LabelFontSize="24" LabelFormat="{}{0:N0}" LabelInterval="2" MajorTickColor="White"
                             MajorTickInnerExtent="0.74" MajorTickInterval="1" MajorTickOuterExtent="0.90" MajorTickThickness="2"
                             MaxValue="8" MinValue="0" MinorTickColor="#A0A0A0" MinorTickInnerExtent="0.78"
@@ -37,10 +37,10 @@
                             NeedleStartWidth="{Binding NeedleStartWidth}"
                             PivotColor="{Binding PivotColor}"
                             PivotRadius="8"
-                            ShowValue="{Binding ShowValue}"
                             StartAngle="{Binding StartAngle}"
                             SweepAngle="270" Unit="x1000 rpm" UnitColor="#A0A0A0" UnitFontSize="14"
-                            ValueColor="White" ValueFontSize="24" ValueFormat="{}{0:N1}">
+                            ValueColor="White" ValueFontSize="24" ValueFormat="{}{0:N1}"
+                            ValueVisible="{Binding ValueVisible}">
             <clam:ClamGaugeView.Ranges>
                 <clam:GaugeRange EndColor="#FF2020" EndValue="8" StartColor="#CC2020" StartValue="6" />
             </clam:ClamGaugeView.Ranges>

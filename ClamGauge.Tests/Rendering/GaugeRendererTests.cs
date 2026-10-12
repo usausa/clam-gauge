@@ -11,7 +11,7 @@ public sealed class GaugeRendererTests
     public void LabelsPreferTheFormatterThenTheConverterThenTheFormat()
     {
         // Arrange
-        var view = new ClamGaugeView { LabelFormat = "{0:N0}%" };
+        using var view = new ClamGaugeView { LabelFormat = "{0:N0}%" };
 
         // Act & Assert
         Assert.Equal("40%", GaugeRenderer.FormatLabel(view.CreateRenderState(), 40));
@@ -34,7 +34,7 @@ public sealed class GaugeRendererTests
         CultureInfo.CurrentCulture = CultureInfo.InvariantCulture;
         try
         {
-            var view = new ClamGaugeView { MaxValue = 2000, Value = 1013.4 };
+            using var view = new ClamGaugeView { MaxValue = 2000, Value = 1013.4 };
 
             // Act & Assert
             Assert.Equal("1,013.4", GaugeRenderer.FormatValue(view.CreateRenderState()));
@@ -42,6 +42,30 @@ public sealed class GaugeRendererTests
             // Act & Assert
             view.ValueFormat = "{0:N0}";
             Assert.Equal("1,013", GaugeRenderer.FormatValue(view.CreateRenderState()));
+        }
+        finally
+        {
+            CultureInfo.CurrentCulture = culture;
+        }
+    }
+
+    [Fact]
+    public void FormatsWithABraceAreCompositeAndOthersAreFormatStrings()
+    {
+        // Arrange
+        var culture = CultureInfo.CurrentCulture;
+        CultureInfo.CurrentCulture = CultureInfo.InvariantCulture;
+        try
+        {
+            using var view = new ClamGaugeView { MaxValue = 2000, Value = 1013.4, LabelFormat = "N1", ValueFormat = "{0:N0} hPa" };
+
+            // Act & Assert
+            Assert.Equal("40.0", GaugeRenderer.FormatLabel(view.CreateRenderState(), 40));
+            Assert.Equal("1,013 hPa", GaugeRenderer.FormatValue(view.CreateRenderState()));
+
+            // Act & Assert
+            view.ValueFormat = String.Empty;
+            Assert.Equal("1013.4", GaugeRenderer.FormatValue(view.CreateRenderState()));
         }
         finally
         {
@@ -63,9 +87,9 @@ public sealed class GaugeRendererTests
         // Arrange
         var views = new[]
         {
-            new ClamGaugeView { Value = 60, GaugeBackgroundColor = Colors.Navy, GaugeBackgroundColor2 = Colors.White, BezelInnerThickness = 3, Unit = "km/h" },
-            new ClamGaugeView { Value = 30, GaugeBackgroundColor = Colors.Black, Unit = "%", UnitPosition = GaugeUnitPosition.Right, LabelFormat = "{0:N0}%" },
-            new ClamGaugeView { Value = 270, MaxValue = 360, StartAngle = 0, SweepAngle = 360, ShowValue = false, LabelInterval = 90, LabelConverter = new CompassConverter(), AnimationDuration = 0 },
+            new ClamGaugeView { Value = 60, GaugeBackgroundStartColor = Colors.Navy, GaugeBackgroundEndColor = Colors.White, BezelInnerThickness = 3, Unit = "km/h" },
+            new ClamGaugeView { Value = 30, GaugeBackgroundStartColor = Colors.Black, Unit = "%", UnitPosition = GaugeUnitPosition.Right, LabelFormat = "{0:N0}%" },
+            new ClamGaugeView { Value = 270, MaxValue = 360, StartAngle = 0, SweepAngle = 360, ValueVisible = false, LabelInterval = 90, LabelConverter = new CompassConverter(), AnimationDuration = 0 },
             new ClamGaugeView { Value = 7, MaxValue = 8, StartAngle = -150, MinorTickInterval = 0.25, MajorTickInterval = 1, LabelInterval = 2, LabelFormatter = static value => $"{value:N0}k" }
         };
         views[0].Ranges.Add(new GaugeRange { StartValue = 0, EndValue = 80, StartColor = Colors.Green, EndColor = Colors.Yellow });
@@ -90,7 +114,7 @@ public sealed class GaugeRendererTests
     public void NothingIsDrawnWithoutAScaleOrARadius()
     {
         // Arrange
-        var view = new ClamGaugeView { Value = 50, GaugeBackgroundColor = Colors.Black };
+        using var view = new ClamGaugeView { Value = 50, GaugeBackgroundStartColor = Colors.Black };
         using var renderer = new GaugeRenderer(view.FontFamily);
         using var surface = SKSurface.Create(new SKImageInfo(Size, Size));
         renderer.Render(surface.Canvas, Size, Size, view.CreateRenderState());
@@ -115,7 +139,7 @@ public sealed class GaugeRendererTests
     public void TextIsShapedByTheFontResolverOnceForRepeatedFrames()
     {
         // Arrange
-        var view = new ClamGaugeView { Value = 60, Unit = "回転/分", LabelFormatter = static value => $"{value:N0}℃" };
+        using var view = new ClamGaugeView { Value = 60, Unit = "回転/分", LabelFormatter = static value => $"{value:N0}℃" };
         using var renderer = new GaugeRenderer(view.FontFamily);
         using var surface = SKSurface.Create(new SKImageInfo(Size, Size));
 
@@ -134,7 +158,7 @@ public sealed class GaugeRendererTests
     {
         // Arrange
         var background = Color.FromArgb("#123456");
-        var view = new ClamGaugeView { GaugeBackgroundColor = background };
+        using var view = new ClamGaugeView { GaugeBackgroundStartColor = background };
 
         // Act
         using var bitmap = Render(view);
@@ -148,15 +172,15 @@ public sealed class GaugeRendererTests
     public void GradientBackgroundRunsFromTheTopLeft()
     {
         // Arrange
-        var view = new ClamGaugeView
+        using var view = new ClamGaugeView
         {
             Value = 50,
-            GaugeBackgroundColor = Colors.Black,
-            GaugeBackgroundColor2 = Colors.White,
+            GaugeBackgroundStartColor = Colors.Black,
+            GaugeBackgroundEndColor = Colors.White,
             MajorTickInterval = 0,
             MinorTickInterval = 0,
             LabelInterval = 0,
-            ShowValue = false
+            ValueVisible = false
         };
 
         // Act
@@ -170,9 +194,10 @@ public sealed class GaugeRendererTests
     public void RangesReplaceTheArcFill()
     {
         // Arrange
-        var view = new ClamGaugeView { ArcTrackColor = Colors.Transparent };
-        var scale = new GaugeScale(view.MinValue, view.MaxValue, view.StartAngle, view.SweepAngle);
-        var arc = (view.ArcInnerExtent + view.ArcOuterExtent) / 2;
+        using var view = new ClamGaugeView { ArcTrackColor = Colors.Transparent };
+        var state = view.CreateRenderState();
+        var scale = new GaugeScale(state.MinValue, state.MaxValue, state.StartAngle, state.SweepAngle);
+        var arc = (state.ArcInnerExtent + state.ArcOuterExtent) / 2;
 
         // Act
         using var filled = Render(view);
@@ -193,11 +218,11 @@ public sealed class GaugeRendererTests
     public void NeedleHalvesHaveTheirOwnColors()
     {
         // Arrange
-        var view = new ClamGaugeView
+        using var view = new ClamGaugeView
         {
             StartAngle = 0,
             SweepAngle = 360,
-            ShowValue = false,
+            ValueVisible = false,
             NeedleLeftColor = Colors.Blue,
             NeedleRightColor = Colors.Lime
         };

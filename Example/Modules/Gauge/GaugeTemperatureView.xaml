@@ -27,7 +27,7 @@
                             ArcInnerExtent="0.84" ArcOuterExtent="0.92"
                             ArcStartColor="{Binding ArcStartColor}"
                             ArcTrackColor="#30FFFFFF" BezelInnerThickness="0" BezelOuterEndColor="#404860" BezelOuterStartColor="#A0A8C0"
-                            BezelOuterThickness="3.5" GaugeBackgroundColor="#1A1E30" LabelColor="White" LabelExtent="0.64"
+                            BezelOuterThickness="3.5" GaugeBackgroundStartColor="#1A1E30" LabelColor="White" LabelExtent="0.64"
                             LabelFontSize="16" LabelFormat="{}{0:N0}"
                             LabelInterval="{Binding LabelInterval}"
                             MajorTickColor="White" MajorTickInnerExtent="0.72" MajorTickInterval="5" MajorTickOuterExtent="0.80"

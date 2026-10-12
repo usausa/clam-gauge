@@ -35,13 +35,13 @@ internal sealed class GaugeRenderer : IDisposable
             return converter.Convert(value, typeof(string), null, CultureInfo.CurrentCulture) as string ?? String.Empty;
         }
 
-        return String.Format(CultureInfo.CurrentCulture, state.LabelFormat, value);
+        return state.LabelFormat.Format(value, CultureInfo.CurrentCulture);
     }
 
     public static string FormatValue(GaugeRenderState state)
     {
         ArgumentNullException.ThrowIfNull(state);
-        return String.Format(CultureInfo.CurrentCulture, state.ValueFormat, state.DisplayValue);
+        return state.ValueFormat.Format(state.DisplayValue, CultureInfo.CurrentCulture);
     }
 
     public static SKColor GetPivotHighlight(SKColor color) =>
@@ -90,8 +90,8 @@ internal sealed class GaugeRenderer : IDisposable
 
     private static void DrawBackground(SKCanvas canvas, GaugeGeometry geometry, GaugeRenderState state)
     {
-        var gradient = state.GaugeBackgroundColor2.Alpha > 0f;
-        if (!gradient && (state.GaugeBackgroundColor.Alpha <= 0f))
+        var gradient = state.GaugeBackgroundEndColor.Alpha > 0f;
+        if (!gradient && (state.GaugeBackgroundStartColor.Alpha <= 0f))
         {
             return;
         }
@@ -100,14 +100,14 @@ internal sealed class GaugeRenderer : IDisposable
         var cx = geometry.CenterX;
         var cy = geometry.CenterY;
         using var shader = gradient
-            ? SKShader.CreateLinearGradient(new SKPoint(cx - radius, cy - radius), new SKPoint(cx + radius, cy + radius), [state.GaugeBackgroundColor.ToSKColor(), state.GaugeBackgroundColor2.ToSKColor()], null, SKShaderTileMode.Clamp)
+            ? SKShader.CreateLinearGradient(new SKPoint(cx - radius, cy - radius), new SKPoint(cx + radius, cy + radius), [state.GaugeBackgroundStartColor.ToSKColor(), state.GaugeBackgroundEndColor.ToSKColor()], null, SKShaderTileMode.Clamp)
             : null;
         using var paint = new SKPaint();
         paint.Style = SKPaintStyle.Fill;
         paint.IsAntialias = true;
         if (shader is null)
         {
-            paint.Color = state.GaugeBackgroundColor.ToSKColor();
+            paint.Color = state.GaugeBackgroundStartColor.ToSKColor();
         }
         else
         {
@@ -267,7 +267,7 @@ internal sealed class GaugeRenderer : IDisposable
 
     private void DrawCenterValue(SKCanvas canvas, GaugeGeometry geometry, GaugeRenderState state)
     {
-        if (!state.ShowValue)
+        if (!state.ValueVisible)
         {
             return;
         }
