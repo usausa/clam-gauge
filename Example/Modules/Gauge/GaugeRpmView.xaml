@@ -4,55 +4,98 @@
              xmlns:s="http://smart/maui"
              xmlns:shell="clr-namespace:Example.Shell"
              xmlns:module="clr-namespace:Example.Modules.Gauge"
-             xmlns:clam="clr-namespace:ClamGauge;assembly=ClamGauge"
+             xmlns:clam="clr-namespace:ClamGauge;assembly=ClamGauge" xmlns:cmc="clr-namespace:MauiComponents.Controls;assembly=MauiComponents.Controls"
              x:Class="Example.Modules.Gauge.GaugeRpmView"
              x:DataType="{x:Type module:GaugeRpmViewModel}"
              s:BindingContextResolver.Type="{x:Type module:GaugeRpmViewModel}"
              shell:ShellProperty.Title="RPM"
              shell:ShellProperty.Function1Text="Back"
-             shell:ShellProperty.Function2Text="Value"
-             shell:ShellProperty.Function3Text="Angle"
-             shell:ShellProperty.Function4Text="Needle"
+             shell:ShellProperty.Function2Text="Setting"
              shell:ShellProperty.Function1Enabled="True"
-             shell:ShellProperty.Function2Enabled="True"
-             shell:ShellProperty.Function3Enabled="True"
-             shell:ShellProperty.Function4Enabled="True">
+             shell:ShellProperty.Function2Enabled="True">
 
-    <Grid Style="{StaticResource FillGrid}"
-          RowDefinitions="*,Auto">
-        <clam:ClamGaugeView Grid.Row="0"
-                            Style="{StaticResource GaugeView}"
-                            Value="{Binding Value}"
-                            AnimationDuration="1000" ArcInnerExtent="0.80" ArcOuterExtent="0.88" ArcTrackColor="Transparent"
-                            BezelInnerThickness="0" BezelOuterEndColor="#505058" BezelOuterStartColor="#D0D0D8" BezelOuterThickness="3.5"
-                            GaugeBackgroundEndColor="#D0D0D8" GaugeBackgroundStartColor="#141414" LabelColor="White" LabelExtent="0.65"
-                            LabelFontSize="24" LabelFormat="{}{0:N0}" LabelInterval="2" MajorTickColor="White"
-                            MajorTickInnerExtent="0.74" MajorTickInterval="1" MajorTickOuterExtent="0.90" MajorTickThickness="2"
-                            MaxValue="8" MinValue="0" MinorTickColor="#A0A0A0" MinorTickInnerExtent="0.78"
-                            MinorTickInterval="0.25" MinorTickOuterExtent="0.90"
-                            NeedleEndExtent="{Binding NeedleEndExtent}"
-                            NeedleEndWidth="{Binding NeedleEndWidth}"
-                            NeedleLeftColor="{Binding NeedleLeftColor}"
-                            NeedleRightColor="{Binding NeedleRightColor}"
-                            NeedleStartWidth="{Binding NeedleStartWidth}"
-                            PivotColor="{Binding PivotColor}"
-                            PivotRadius="8"
-                            StartAngle="{Binding StartAngle}"
-                            SweepAngle="270" Unit="x1000 rpm" UnitColor="#A0A0A0" UnitFontSize="14"
-                            ValueColor="White" ValueFontSize="24" ValueFormat="{}{0:N1}"
-                            ValueVisible="{Binding ValueVisible}">
-            <clam:ClamGaugeView.Ranges>
-                <clam:GaugeRange EndColor="#FF2020" EndValue="8" StartColor="#CC2020" StartValue="6" />
-            </clam:ClamGaugeView.Ranges>
-            <clam:ClamGaugeView.GestureRecognizers>
-                <TapGestureRecognizer Command="{Binding RandomCommand}" />
-            </clam:ClamGaugeView.GestureRecognizers>
-        </clam:ClamGaugeView>
+    <Grid>
+        <Grid Style="{StaticResource FillGrid}"
+              RowDefinitions="*,Auto">
+            <clam:ClamGaugeView Grid.Row="0"
+                                Style="{StaticResource GaugeView}"
+                                Value="{Binding Value}"
+                                AnimationDuration="1000" ArcInnerExtent="0.80" ArcOuterExtent="0.88" ArcTrackColor="Transparent"
+                                BezelInnerThickness="0" BezelOuterEndColor="#505058" BezelOuterStartColor="#D0D0D8" BezelOuterThickness="3.5"
+                                GaugeBackgroundEndColor="#D0D0D8" GaugeBackgroundStartColor="#141414" LabelColor="White" LabelExtent="0.65"
+                                LabelFontSize="24" LabelFormat="{}{0:N0}" LabelInterval="2" MajorTickColor="White"
+                                MajorTickInnerExtent="0.74" MajorTickInterval="1" MajorTickOuterExtent="0.90" MajorTickThickness="2"
+                                MaxValue="8" MinValue="0" MinorTickColor="#A0A0A0" MinorTickInnerExtent="0.78"
+                                MinorTickInterval="0.25" MinorTickOuterExtent="0.90"
+                                NeedleEndExtent="{Binding NeedleEndExtent}"
+                                NeedleEndWidth="{Binding NeedleEndWidth}"
+                                NeedleLeftColor="{Binding NeedleLeftColor}"
+                                NeedleRightColor="{Binding NeedleRightColor}"
+                                NeedleStartWidth="{Binding NeedleStartWidth}"
+                                PivotColor="{Binding PivotColor}"
+                                PivotRadius="8"
+                                StartAngle="{Binding StartAngle}"
+                                SweepAngle="270" Unit="x1000 rpm" UnitColor="#A0A0A0" UnitFontSize="14"
+                                ValueColor="White" ValueFontSize="24" ValueFormat="{}{0:N1}"
+                                ValueVisible="{Binding ValueVisible}">
+                <clam:ClamGaugeView.Ranges>
+                    <clam:GaugeRange EndColor="#FF2020" EndValue="8" StartColor="#CC2020" StartValue="6" />
+                </clam:ClamGaugeView.Ranges>
+                <clam:ClamGaugeView.GestureRecognizers>
+                    <TapGestureRecognizer Command="{Binding RandomCommand}" />
+                </clam:ClamGaugeView.GestureRecognizers>
+            </clam:ClamGaugeView>
 
-        <Slider Grid.Row="1"
-                Style="{StaticResource GaugeSlider}"
-                Value="{Binding Value, Mode=TwoWay}"
-                Minimum="0" Maximum="8" />
+            <Slider Grid.Row="1"
+                    Style="{StaticResource GaugeSlider}"
+                    Value="{Binding Value, Mode=TwoWay}"
+                    Minimum="0" Maximum="8" />
+        </Grid>
+
+        <cmc:BottomSheetView Style="{StaticResource SettingSheet}"
+                             IsOpen="{Binding IsSettingOpen}">
+            <cmc:BottomSheetView.SheetTemplate>
+                <DataTemplate x:DataType="{x:Type module:GaugeRpmViewModel}">
+                    <VerticalStackLayout Style="{StaticResource SheetStack}">
+                        <Label Style="{StaticResource SheetTitle}"
+                               Text="表示" />
+                        <Grid Style="{StaticResource SheetGrid}"
+                              ColumnDefinitions="*,*">
+                            <Grid Grid.Column="0"
+                                  ColumnDefinitions="*,Auto">
+                                <Label Grid.Column="0"
+                                       Style="{StaticResource SheetSwitchLabel}"
+                                       Text="値" />
+                                <Switch Grid.Column="1"
+                                        Style="{StaticResource SheetSwitch}"
+                                        IsToggled="{Binding ValueVisible}" />
+                            </Grid>
+                            <Grid Grid.Column="1"
+                                  ColumnDefinitions="*,Auto">
+                                <Label Grid.Column="0"
+                                       Style="{StaticResource SheetSwitchLabel}"
+                                       Text="左右対称" />
+                                <Switch Grid.Column="1"
+                                        Style="{StaticResource SheetSwitch}"
+                                        IsToggled="{Binding Symmetric}" />
+                            </Grid>
+                        </Grid>
+                        <Grid Style="{StaticResource SheetGrid}"
+                              ColumnDefinitions="*,*">
+                            <Grid Grid.Column="0"
+                                  ColumnDefinitions="*,Auto">
+                                <Label Grid.Column="0"
+                                       Style="{StaticResource SheetSwitchLabel}"
+                                       Text="太い針" />
+                                <Switch Grid.Column="1"
+                                        Style="{StaticResource SheetSwitch}"
+                                        IsToggled="{Binding WideNeedle}" />
+                            </Grid>
+                        </Grid>
+                    </VerticalStackLayout>
+                </DataTemplate>
+            </cmc:BottomSheetView.SheetTemplate>
+        </cmc:BottomSheetView>
     </Grid>
 
 </ContentView>

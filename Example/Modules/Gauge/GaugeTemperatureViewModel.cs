@@ -21,8 +21,6 @@ public sealed partial class GaugeTemperatureViewModel : GaugeViewModelBase
 
     private static readonly double[] MinorTickIntervals = [1, 0.5, 0];
 
-    private int minorTickIndex;
-
     [ObservableProperty]
     public partial IReadOnlyList<GaugeRange> Ranges { get; set; } = Bands;
 
@@ -38,6 +36,30 @@ public sealed partial class GaugeTemperatureViewModel : GaugeViewModelBase
     [ObservableProperty]
     public partial double LabelInterval { get; set; } = 10;
 
+    [ObservableProperty]
+    public partial int MinorTickIndex { get; set; }
+
+    [ObservableProperty]
+    public partial string LabelText { get; set; } = "目盛り 10";
+
+    public bool BandsVisible
+    {
+        get;
+        set
+        {
+            if (field != value)
+            {
+                field = value;
+                RaisePropertyChanged(nameof(BandsVisible));
+                Ranges = value ? Bands : [];
+            }
+        }
+    }
+
+    public IObserveCommand SelectTickCommand { get; }
+
+    public IObserveCommand ToggleLabelCommand { get; }
+
     public IReadOnlyList<ColorSwatch> ArcSwatches { get; }
 
     //--------------------------------------------------------------------------------
@@ -48,30 +70,30 @@ public sealed partial class GaugeTemperatureViewModel : GaugeViewModelBase
         : base(-10, 40, 22, 1)
     {
         ArcSwatches = [.. Arcs.Select(x => ColorSwatch.Gradient(x.Start, x.End, MakeDelegateCommand(() => SelectArc(x.Start, x.End))))];
+        BandsVisible = true;
+        SelectTickCommand = MakeDelegateCommand<int>(SelectTick);
+        ToggleLabelCommand = MakeDelegateCommand(ToggleLabel);
+    }
+
+    //--------------------------------------------------------------------------------
+    // Setting
+    //--------------------------------------------------------------------------------
+
+    private void SelectTick(int index)
+    {
+        MinorTickIndex = index;
+        MinorTickInterval = MinorTickIntervals[index];
+    }
+
+    private void ToggleLabel()
+    {
+        LabelInterval = LabelInterval > 5 ? 5 : 10;
+        LabelText = $"目盛り {LabelInterval:N0}";
     }
 
     //--------------------------------------------------------------------------------
     // Navigation
     //--------------------------------------------------------------------------------
-
-    protected override Task OnNotifyFunction2()
-    {
-        Ranges = Ranges.Count > 0 ? [] : Bands;
-        return Task.CompletedTask;
-    }
-
-    protected override Task OnNotifyFunction3()
-    {
-        minorTickIndex = (minorTickIndex + 1) % MinorTickIntervals.Length;
-        MinorTickInterval = MinorTickIntervals[minorTickIndex];
-        return Task.CompletedTask;
-    }
-
-    protected override Task OnNotifyFunction4()
-    {
-        LabelInterval = LabelInterval > 5 ? 5 : 10;
-        return Task.CompletedTask;
-    }
 
     //--------------------------------------------------------------------------------
     // Operation

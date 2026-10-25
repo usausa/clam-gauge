@@ -4,68 +4,141 @@
              xmlns:s="http://smart/maui"
              xmlns:shell="clr-namespace:Example.Shell"
              xmlns:module="clr-namespace:Example.Modules.Gauge"
-             xmlns:clam="clr-namespace:ClamGauge;assembly=ClamGauge"
+             xmlns:clam="clr-namespace:ClamGauge;assembly=ClamGauge" xmlns:cmc="clr-namespace:MauiComponents.Controls;assembly=MauiComponents.Controls"
              x:Class="Example.Modules.Gauge.GaugeTemperatureView"
              x:DataType="{x:Type module:GaugeTemperatureViewModel}"
              s:BindingContextResolver.Type="{x:Type module:GaugeTemperatureViewModel}"
              shell:ShellProperty.Title="Temperature"
              shell:ShellProperty.Function1Text="Back"
-             shell:ShellProperty.Function2Text="Bands"
-             shell:ShellProperty.Function3Text="Ticks"
-             shell:ShellProperty.Function4Text="Labels"
+             shell:ShellProperty.Function2Text="Setting"
              shell:ShellProperty.Function1Enabled="True"
-             shell:ShellProperty.Function2Enabled="True"
-             shell:ShellProperty.Function3Enabled="True"
-             shell:ShellProperty.Function4Enabled="True">
+             shell:ShellProperty.Function2Enabled="True">
 
-    <Grid Style="{StaticResource FillGrid}"
-          RowDefinitions="*,Auto,Auto">
-        <clam:ClamGaugeView Grid.Row="0"
-                            Style="{StaticResource GaugeView}"
-                            Value="{Binding Value}"
-                            ArcEndColor="{Binding ArcEndColor}"
-                            ArcInnerExtent="0.84" ArcOuterExtent="0.92"
-                            ArcStartColor="{Binding ArcStartColor}"
-                            ArcTrackColor="#30FFFFFF" BezelInnerThickness="0" BezelOuterEndColor="#404860" BezelOuterStartColor="#A0A8C0"
-                            BezelOuterThickness="3.5" GaugeBackgroundStartColor="#1A1E30" LabelColor="White" LabelExtent="0.64"
-                            LabelFontSize="16" LabelFormat="{}{0:N0}"
-                            LabelInterval="{Binding LabelInterval}"
-                            MajorTickColor="White" MajorTickInnerExtent="0.72" MajorTickInterval="5" MajorTickOuterExtent="0.80"
-                            MaxValue="40" MinValue="-10" MinorTickColor="#8090B0" MinorTickInnerExtent="0.76"
-                            MinorTickInterval="{Binding MinorTickInterval}"
-                            MinorTickOuterExtent="0.80" NeedleLeftColor="#CC5000" NeedleRightColor="#DD6010" NeedleStartWidth="8"
-                            PivotColor="#CC5000" PivotRadius="8"
-                            Ranges="{Binding Ranges}"
-                            Unit="°C" UnitColor="#FFA040" UnitFontSize="14" UnitPosition="Right"
-                            ValueColor="White" ValueFontSize="24" ValueFormat="{}{0:N1}" ValueOffsetY="0.4">
-            <clam:ClamGaugeView.GestureRecognizers>
-                <TapGestureRecognizer Command="{Binding RandomCommand}" />
-            </clam:ClamGaugeView.GestureRecognizers>
-        </clam:ClamGaugeView>
+    <Grid>
+        <Grid Style="{StaticResource FillGrid}"
+              RowDefinitions="*,Auto,Auto">
+            <clam:ClamGaugeView Grid.Row="0"
+                                Style="{StaticResource GaugeView}"
+                                Value="{Binding Value}"
+                                ArcEndColor="{Binding ArcEndColor}"
+                                ArcInnerExtent="0.84" ArcOuterExtent="0.92"
+                                ArcStartColor="{Binding ArcStartColor}"
+                                ArcTrackColor="#30FFFFFF" BezelInnerThickness="0" BezelOuterEndColor="#404860" BezelOuterStartColor="#A0A8C0"
+                                BezelOuterThickness="3.5" GaugeBackgroundStartColor="#1A1E30" LabelColor="White" LabelExtent="0.64"
+                                LabelFontSize="16" LabelFormat="{}{0:N0}"
+                                LabelInterval="{Binding LabelInterval}"
+                                MajorTickColor="White" MajorTickInnerExtent="0.72" MajorTickInterval="5" MajorTickOuterExtent="0.80"
+                                MaxValue="40" MinValue="-10" MinorTickColor="#8090B0" MinorTickInnerExtent="0.76"
+                                MinorTickInterval="{Binding MinorTickInterval}"
+                                MinorTickOuterExtent="0.80" NeedleLeftColor="#CC5000" NeedleRightColor="#DD6010" NeedleStartWidth="8"
+                                PivotColor="#CC5000" PivotRadius="8"
+                                Ranges="{Binding Ranges}"
+                                Unit="°C" UnitColor="#FFA040" UnitFontSize="14" UnitPosition="Right"
+                                ValueColor="White" ValueFontSize="24" ValueFormat="{}{0:N1}" ValueOffsetY="0.4">
+                <clam:ClamGaugeView.GestureRecognizers>
+                    <TapGestureRecognizer Command="{Binding RandomCommand}" />
+                </clam:ClamGaugeView.GestureRecognizers>
+            </clam:ClamGaugeView>
 
-        <Slider Grid.Row="1"
-                Style="{StaticResource GaugeSlider}"
-                Value="{Binding Value, Mode=TwoWay}"
-                Minimum="-10" Maximum="40" />
+            <Slider Grid.Row="1"
+                    Style="{StaticResource GaugeSlider}"
+                    Value="{Binding Value, Mode=TwoWay}"
+                    Minimum="-10" Maximum="40" />
 
-        <Grid Grid.Row="2"
-              Style="{StaticResource SwatchGrid}"
-              ColumnDefinitions="88,*">
-            <Label Grid.Column="0"
-                   Style="{StaticResource SwatchLabel}"
-                   Text="Arc" />
-            <HorizontalStackLayout Grid.Column="1"
-                                   Style="{StaticResource SwatchLayout}"
-                                   BindableLayout.ItemsSource="{Binding ArcSwatches}">
-                <BindableLayout.ItemTemplate>
-                    <DataTemplate x:DataType="{x:Type module:ColorSwatch}">
-                        <Button Style="{StaticResource SwatchButton}"
-                                Command="{Binding Command}"
-                                Background="{Binding Brush}" />
-                    </DataTemplate>
-                </BindableLayout.ItemTemplate>
-            </HorizontalStackLayout>
+            <Grid Grid.Row="2"
+                  Style="{StaticResource SwatchGrid}"
+                  ColumnDefinitions="88,*">
+                <Label Grid.Column="0"
+                       Style="{StaticResource SwatchLabel}"
+                       Text="Arc" />
+                <HorizontalStackLayout Grid.Column="1"
+                                       Style="{StaticResource SwatchLayout}"
+                                       BindableLayout.ItemsSource="{Binding ArcSwatches}">
+                    <BindableLayout.ItemTemplate>
+                        <DataTemplate x:DataType="{x:Type module:ColorSwatch}">
+                            <Button Style="{StaticResource SwatchButton}"
+                                    Command="{Binding Command}"
+                                    Background="{Binding Brush}" />
+                        </DataTemplate>
+                    </BindableLayout.ItemTemplate>
+                </HorizontalStackLayout>
+            </Grid>
         </Grid>
+
+        <cmc:BottomSheetView Style="{StaticResource SettingSheet}"
+                             IsOpen="{Binding IsSettingOpen}">
+            <cmc:BottomSheetView.SheetTemplate>
+                <DataTemplate x:DataType="{x:Type module:GaugeTemperatureViewModel}">
+                    <VerticalStackLayout Style="{StaticResource SheetStack}">
+                        <Label Style="{StaticResource SheetTitle}"
+                               Text="補助目盛り" />
+                        <Grid Style="{StaticResource SheetGrid}"
+                              ColumnDefinitions="*,*,*">
+                            <Button Grid.Column="0"
+                                    Style="{StaticResource SheetButton}"
+                                    Command="{Binding SelectTickCommand}"
+                                    CommandParameter="0"
+                                    Text="1">
+                                <Button.Triggers>
+                                    <DataTrigger TargetType="Button"
+                                                 Value="0"
+                                                 Binding="{Binding MinorTickIndex}">
+                                        <Setter Property="BackgroundColor" Value="{StaticResource BlueDefault}" />
+                                        <Setter Property="TextColor" Value="White" />
+                                    </DataTrigger>
+                                </Button.Triggers>
+                            </Button>
+                            <Button Grid.Column="1"
+                                    Style="{StaticResource SheetButton}"
+                                    Command="{Binding SelectTickCommand}"
+                                    CommandParameter="1"
+                                    Text="0.5">
+                                <Button.Triggers>
+                                    <DataTrigger TargetType="Button"
+                                                 Value="1"
+                                                 Binding="{Binding MinorTickIndex}">
+                                        <Setter Property="BackgroundColor" Value="{StaticResource BlueDefault}" />
+                                        <Setter Property="TextColor" Value="White" />
+                                    </DataTrigger>
+                                </Button.Triggers>
+                            </Button>
+                            <Button Grid.Column="2"
+                                    Style="{StaticResource SheetButton}"
+                                    Command="{Binding SelectTickCommand}"
+                                    CommandParameter="2"
+                                    Text="なし">
+                                <Button.Triggers>
+                                    <DataTrigger TargetType="Button"
+                                                 Value="2"
+                                                 Binding="{Binding MinorTickIndex}">
+                                        <Setter Property="BackgroundColor" Value="{StaticResource BlueDefault}" />
+                                        <Setter Property="TextColor" Value="White" />
+                                    </DataTrigger>
+                                </Button.Triggers>
+                            </Button>
+                        </Grid>
+                        <Label Style="{StaticResource SheetTitle}"
+                               Text="表示" />
+                        <Grid Style="{StaticResource SheetGrid}"
+                              ColumnDefinitions="*,*">
+                            <Button Grid.Column="0"
+                                    Style="{StaticResource SheetButton}"
+                                    Command="{Binding ToggleLabelCommand}"
+                                    Text="{Binding LabelText}" />
+                            <Grid Grid.Column="1"
+                                  ColumnDefinitions="*,Auto">
+                                <Label Grid.Column="0"
+                                       Style="{StaticResource SheetSwitchLabel}"
+                                       Text="帯" />
+                                <Switch Grid.Column="1"
+                                        Style="{StaticResource SheetSwitch}"
+                                        IsToggled="{Binding BandsVisible}" />
+                            </Grid>
+                        </Grid>
+                    </VerticalStackLayout>
+                </DataTemplate>
+            </cmc:BottomSheetView.SheetTemplate>
+        </cmc:BottomSheetView>
     </Grid>
 
 </ContentView>

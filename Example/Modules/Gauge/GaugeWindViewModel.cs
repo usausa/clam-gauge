@@ -8,8 +8,6 @@ public sealed partial class GaugeWindViewModel : GaugeViewModelBase
 
     private static readonly DegreeLabelConverter Degrees = new();
 
-    private int labelMode;
-
     [ObservableProperty]
     public partial IValueConverter LabelConverter { get; set; } = Compass;
 
@@ -22,6 +20,25 @@ public sealed partial class GaugeWindViewModel : GaugeViewModelBase
     [ObservableProperty]
     public partial int AnimationDuration { get; set; }
 
+    [ObservableProperty]
+    public partial int LabelMode { get; set; }
+
+    public bool NeedleAnimated
+    {
+        get;
+        set
+        {
+            if (field != value)
+            {
+                field = value;
+                RaisePropertyChanged(nameof(NeedleAnimated));
+                AnimationDuration = value ? 500 : 0;
+            }
+        }
+    }
+
+    public IObserveCommand SelectLabelModeCommand { get; }
+
     //--------------------------------------------------------------------------------
     // Constructor
     //--------------------------------------------------------------------------------
@@ -29,34 +46,26 @@ public sealed partial class GaugeWindViewModel : GaugeViewModelBase
     public GaugeWindViewModel()
         : base(0, 360, 90, 0)
     {
+        SelectLabelModeCommand = MakeDelegateCommand<int>(SelectLabelMode);
     }
 
     //--------------------------------------------------------------------------------
-    // Navigation
+    // Setting
     //--------------------------------------------------------------------------------
 
-    protected override Task OnNotifyFunction2()
+    private void SelectLabelMode(int mode)
     {
-        labelMode = (labelMode + 1) % 3;
-        LabelConverter = labelMode == 2 ? Degrees : Compass;
-        LabelInterval = labelMode switch
+        LabelMode = mode;
+        LabelConverter = mode == 2 ? Degrees : Compass;
+        LabelInterval = mode switch
         {
             0 => 90,
             1 => 45,
             _ => 30
         };
-        return Task.CompletedTask;
     }
 
-    protected override Task OnNotifyFunction3()
-    {
-        AnimationDuration = AnimationDuration > 0 ? 0 : 500;
-        return Task.CompletedTask;
-    }
-
-    protected override Task OnNotifyFunction4()
-    {
-        ValueVisible = !ValueVisible;
-        return Task.CompletedTask;
-    }
+    //--------------------------------------------------------------------------------
+    // Navigation
+    //--------------------------------------------------------------------------------
 }

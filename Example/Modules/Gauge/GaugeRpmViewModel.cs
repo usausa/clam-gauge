@@ -2,10 +2,6 @@ namespace Example.Modules.Gauge;
 
 public sealed partial class GaugeRpmViewModel : GaugeViewModelBase
 {
-    private bool symmetric;
-
-    private bool wideNeedle;
-
     [ObservableProperty]
     public partial bool ValueVisible { get; set; }
 
@@ -30,6 +26,34 @@ public sealed partial class GaugeRpmViewModel : GaugeViewModelBase
     [ObservableProperty]
     public partial Color PivotColor { get; set; } = Color.FromArgb("#CC4400");
 
+    public bool Symmetric
+    {
+        get;
+        set
+        {
+            if (field != value)
+            {
+                field = value;
+                RaisePropertyChanged(nameof(Symmetric));
+                StartAngle = value ? -135 : -150;
+            }
+        }
+    }
+
+    public bool WideNeedle
+    {
+        get;
+        set
+        {
+            if (field != value)
+            {
+                field = value;
+                RaisePropertyChanged(nameof(WideNeedle));
+                ApplyNeedle();
+            }
+        }
+    }
+
     //--------------------------------------------------------------------------------
     // Constructor
     //--------------------------------------------------------------------------------
@@ -40,31 +64,20 @@ public sealed partial class GaugeRpmViewModel : GaugeViewModelBase
     }
 
     //--------------------------------------------------------------------------------
-    // Navigation
+    // Setting
     //--------------------------------------------------------------------------------
 
-    protected override Task OnNotifyFunction2()
+    private void ApplyNeedle()
     {
-        ValueVisible = !ValueVisible;
-        return Task.CompletedTask;
+        NeedleEndExtent = WideNeedle ? 0.72 : 0.94;
+        NeedleStartWidth = WideNeedle ? 16 : 8;
+        NeedleEndWidth = WideNeedle ? 6 : 2;
+        NeedleLeftColor = Color.FromArgb(WideNeedle ? "#B0B0B8" : "#CC4400");
+        NeedleRightColor = Color.FromArgb(WideNeedle ? "#D0D0D8" : "#DD5010");
+        PivotColor = Color.FromArgb(WideNeedle ? "#B0B0B8" : "#CC4400");
     }
 
-    protected override Task OnNotifyFunction3()
-    {
-        symmetric = !symmetric;
-        StartAngle = symmetric ? -135 : -150;
-        return Task.CompletedTask;
-    }
-
-    protected override Task OnNotifyFunction4()
-    {
-        wideNeedle = !wideNeedle;
-        NeedleEndExtent = wideNeedle ? 0.72 : 0.94;
-        NeedleStartWidth = wideNeedle ? 16 : 8;
-        NeedleEndWidth = wideNeedle ? 6 : 2;
-        NeedleLeftColor = Color.FromArgb(wideNeedle ? "#B0B0B8" : "#CC4400");
-        NeedleRightColor = Color.FromArgb(wideNeedle ? "#F0F0F8" : "#DD5010");
-        PivotColor = Color.FromArgb(wideNeedle ? "#707078" : "#CC4400");
-        return Task.CompletedTask;
-    }
+    //--------------------------------------------------------------------------------
+    // Navigation
+    //--------------------------------------------------------------------------------
 }

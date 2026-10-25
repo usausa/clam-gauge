@@ -11,6 +11,9 @@ public abstract partial class GaugeViewModelBase : AppViewModelBase
     [ObservableProperty]
     public partial double Value { get; set; }
 
+    [ObservableProperty]
+    public partial bool IsSettingOpen { get; set; }
+
     public IObserveCommand RandomCommand { get; }
 
     //--------------------------------------------------------------------------------
@@ -30,9 +33,24 @@ public abstract partial class GaugeViewModelBase : AppViewModelBase
     // Navigation
     //--------------------------------------------------------------------------------
 
-    protected override Task OnNotifyBackAsync() => Navigator.ForwardAsync(ViewId.GaugeMenu);
+    protected override Task OnNotifyBackAsync()
+    {
+        if (IsSettingOpen)
+        {
+            IsSettingOpen = false;
+            return Task.CompletedTask;
+        }
+
+        return Navigator.ForwardAsync(ViewId.GaugeMenu);
+    }
 
     protected override Task OnNotifyFunction1() => OnNotifyBackAsync();
+
+    protected override Task OnNotifyFunction2()
+    {
+        IsSettingOpen = !IsSettingOpen;
+        return Task.CompletedTask;
+    }
 
     //--------------------------------------------------------------------------------
     // Operation

@@ -4,67 +4,95 @@
              xmlns:s="http://smart/maui"
              xmlns:shell="clr-namespace:Example.Shell"
              xmlns:module="clr-namespace:Example.Modules.Gauge"
-             xmlns:clam="clr-namespace:ClamGauge;assembly=ClamGauge"
+             xmlns:clam="clr-namespace:ClamGauge;assembly=ClamGauge" xmlns:cmc="clr-namespace:MauiComponents.Controls;assembly=MauiComponents.Controls"
              x:Class="Example.Modules.Gauge.GaugePressureView"
              x:DataType="{x:Type module:GaugePressureViewModel}"
              s:BindingContextResolver.Type="{x:Type module:GaugePressureViewModel}"
              shell:ShellProperty.Title="Pressure"
              shell:ShellProperty.Function1Text="Back"
-             shell:ShellProperty.Function2Text="Unit"
-             shell:ShellProperty.Function3Text="Labels"
-             shell:ShellProperty.Function4Text="Value"
+             shell:ShellProperty.Function2Text="Setting"
              shell:ShellProperty.Function1Enabled="True"
-             shell:ShellProperty.Function2Enabled="True"
-             shell:ShellProperty.Function3Enabled="True"
-             shell:ShellProperty.Function4Enabled="True">
+             shell:ShellProperty.Function2Enabled="True">
 
-    <Grid Style="{StaticResource FillGrid}"
-          RowDefinitions="*,Auto,Auto">
-        <clam:ClamGaugeView Grid.Row="0"
-                            Style="{StaticResource GaugeView}"
-                            Value="{Binding Value}"
-                            ArcInnerExtent="0.64" ArcOuterExtent="0.76" BezelInnerThickness="0" BezelOuterEndColor="#606060"
-                            BezelOuterStartColor="#D0D0D0" BezelOuterThickness="3.5" LabelExtent="0.88" LabelFontSize="14"
-                            LabelFormat="{}{0:N0}"
-                            LabelInterval="{Binding LabelInterval}"
-                            MajorTickColor="#404040" MajorTickInnerExtent="0.63" MajorTickInterval="10" MajorTickOuterExtent="0.77"
-                            MaxValue="1050" MinValue="950" MinorTickColor="#909090" MinorTickInnerExtent="0.64"
-                            MinorTickInterval="2" MinorTickOuterExtent="0.76" MinorTickThickness="0.5" NeedleEndExtent="0.84"
-                            NeedleStartWidth="8" PivotRadius="8"
-                            Ranges="{Binding Ranges}"
-                            Unit="hPa" UnitFontSize="14"
-                            UnitPosition="{Binding UnitPosition}"
-                            ValueFontSize="28"
-                            ValueFormat="{Binding ValueFormat}"
-                            ValueOffsetY="0.5">
-            <clam:ClamGaugeView.GestureRecognizers>
-                <TapGestureRecognizer Command="{Binding RandomCommand}" />
-            </clam:ClamGaugeView.GestureRecognizers>
-        </clam:ClamGaugeView>
+    <Grid>
+        <Grid Style="{StaticResource FillGrid}"
+              RowDefinitions="*,Auto,Auto">
+            <clam:ClamGaugeView Grid.Row="0"
+                                Style="{StaticResource GaugeView}"
+                                Value="{Binding Value}"
+                                ArcInnerExtent="0.64" ArcOuterExtent="0.76" BezelInnerThickness="0" BezelOuterEndColor="#606060"
+                                BezelOuterStartColor="#D0D0D0" BezelOuterThickness="3.5" LabelExtent="0.88" LabelFontSize="14"
+                                LabelFormat="{}{0:N0}"
+                                LabelInterval="{Binding LabelInterval}"
+                                MajorTickColor="#404040" MajorTickInnerExtent="0.63" MajorTickInterval="10" MajorTickOuterExtent="0.77"
+                                MaxValue="1050" MinValue="950" MinorTickColor="#909090" MinorTickInnerExtent="0.64"
+                                MinorTickInterval="2" MinorTickOuterExtent="0.76" MinorTickThickness="0.5" NeedleEndExtent="0.84"
+                                NeedleStartWidth="8" PivotRadius="8"
+                                Ranges="{Binding Ranges}"
+                                Unit="hPa" UnitFontSize="14"
+                                UnitPosition="{Binding UnitPosition}"
+                                ValueFontSize="28"
+                                ValueFormat="{Binding ValueFormat}"
+                                ValueOffsetY="0.5">
+                <clam:ClamGaugeView.GestureRecognizers>
+                    <TapGestureRecognizer Command="{Binding RandomCommand}" />
+                </clam:ClamGaugeView.GestureRecognizers>
+            </clam:ClamGaugeView>
 
-        <Slider Grid.Row="1"
-                Style="{StaticResource GaugeSlider}"
-                Value="{Binding Value, Mode=TwoWay}"
-                Minimum="950" Maximum="1050" />
+            <Slider Grid.Row="1"
+                    Style="{StaticResource GaugeSlider}"
+                    Value="{Binding Value, Mode=TwoWay}"
+                    Minimum="950" Maximum="1050" />
 
-        <Grid Grid.Row="2"
-              Style="{StaticResource SwatchGrid}"
-              ColumnDefinitions="88,*">
-            <Label Grid.Column="0"
-                   Style="{StaticResource SwatchLabel}"
-                   Text="Band" />
-            <HorizontalStackLayout Grid.Column="1"
-                                   Style="{StaticResource SwatchLayout}"
-                                   BindableLayout.ItemsSource="{Binding BandSwatches}">
-                <BindableLayout.ItemTemplate>
-                    <DataTemplate x:DataType="{x:Type module:ColorSwatch}">
-                        <Button Style="{StaticResource SwatchButton}"
-                                Command="{Binding Command}"
-                                Background="{Binding Brush}" />
-                    </DataTemplate>
-                </BindableLayout.ItemTemplate>
-            </HorizontalStackLayout>
+            <Grid Grid.Row="2"
+                  Style="{StaticResource SwatchGrid}"
+                  ColumnDefinitions="88,*">
+                <Label Grid.Column="0"
+                       Style="{StaticResource SwatchLabel}"
+                       Text="Band" />
+                <HorizontalStackLayout Grid.Column="1"
+                                       Style="{StaticResource SwatchLayout}"
+                                       BindableLayout.ItemsSource="{Binding BandSwatches}">
+                    <BindableLayout.ItemTemplate>
+                        <DataTemplate x:DataType="{x:Type module:ColorSwatch}">
+                            <Button Style="{StaticResource SwatchButton}"
+                                    Command="{Binding Command}"
+                                    Background="{Binding Brush}" />
+                        </DataTemplate>
+                    </BindableLayout.ItemTemplate>
+                </HorizontalStackLayout>
+            </Grid>
         </Grid>
+
+        <cmc:BottomSheetView Style="{StaticResource SettingSheet}"
+                             IsOpen="{Binding IsSettingOpen}">
+            <cmc:BottomSheetView.SheetTemplate>
+                <DataTemplate x:DataType="{x:Type module:GaugePressureViewModel}">
+                    <VerticalStackLayout Style="{StaticResource SheetStack}">
+                        <Label Style="{StaticResource SheetTitle}"
+                               Text="表示" />
+                        <Grid Style="{StaticResource SheetGrid}"
+                              ColumnDefinitions="*,*">
+                            <Button Grid.Column="0"
+                                    Style="{StaticResource SheetButton}"
+                                    Command="{Binding ToggleUnitCommand}"
+                                    Text="{Binding UnitText}" />
+                            <Button Grid.Column="1"
+                                    Style="{StaticResource SheetButton}"
+                                    Command="{Binding ToggleLabelCommand}"
+                                    Text="{Binding LabelText}" />
+                        </Grid>
+                        <Grid Style="{StaticResource SheetGrid}"
+                              ColumnDefinitions="*,*">
+                            <Button Grid.Column="0"
+                                    Style="{StaticResource SheetButton}"
+                                    Command="{Binding ToggleValueCommand}"
+                                    Text="{Binding ValueText}" />
+                        </Grid>
+                    </VerticalStackLayout>
+                </DataTemplate>
+            </cmc:BottomSheetView.SheetTemplate>
+        </cmc:BottomSheetView>
     </Grid>
 
 </ContentView>

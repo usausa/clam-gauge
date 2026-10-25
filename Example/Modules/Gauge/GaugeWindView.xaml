@@ -4,48 +4,126 @@
              xmlns:s="http://smart/maui"
              xmlns:shell="clr-namespace:Example.Shell"
              xmlns:module="clr-namespace:Example.Modules.Gauge"
-             xmlns:clam="clr-namespace:ClamGauge;assembly=ClamGauge"
+             xmlns:clam="clr-namespace:ClamGauge;assembly=ClamGauge" xmlns:cmc="clr-namespace:MauiComponents.Controls;assembly=MauiComponents.Controls"
              x:Class="Example.Modules.Gauge.GaugeWindView"
              x:DataType="{x:Type module:GaugeWindViewModel}"
              s:BindingContextResolver.Type="{x:Type module:GaugeWindViewModel}"
              shell:ShellProperty.Title="Wind"
              shell:ShellProperty.Function1Text="Back"
-             shell:ShellProperty.Function2Text="Labels"
-             shell:ShellProperty.Function3Text="Needle"
-             shell:ShellProperty.Function4Text="Value"
+             shell:ShellProperty.Function2Text="Setting"
              shell:ShellProperty.Function1Enabled="True"
-             shell:ShellProperty.Function2Enabled="True"
-             shell:ShellProperty.Function3Enabled="True"
-             shell:ShellProperty.Function4Enabled="True">
+             shell:ShellProperty.Function2Enabled="True">
 
-    <Grid Style="{StaticResource FillGrid}"
-          RowDefinitions="*,Auto">
-        <clam:ClamGaugeView Grid.Row="0"
-                            Style="{StaticResource GaugeView}"
-                            Value="{Binding Value}"
-                            AnimationDuration="{Binding AnimationDuration}"
-                            ArcEndColor="Transparent" ArcStartColor="Transparent" ArcTrackColor="Transparent" BezelInnerThickness="0"
-                            BezelOuterEndColor="#252525" BezelOuterStartColor="#252525" BezelOuterThickness="6" GaugeBackgroundStartColor="#383838"
-                            LabelColor="White"
-                            LabelConverter="{Binding LabelConverter}"
-                            LabelExtent="0.90" LabelFontSize="28"
-                            LabelInterval="{Binding LabelInterval}"
-                            MajorTickColor="White" MajorTickInnerExtent="0.62" MajorTickInterval="45" MajorTickOuterExtent="0.78"
-                            MajorTickThickness="2" MaxValue="360" MinValue="0" MinorTickColor="#C0C0C0"
-                            MinorTickInnerExtent="0.66" MinorTickInterval="22.5" MinorTickOuterExtent="0.78" NeedleEndExtent="0.54"
-                            NeedleLeftColor="#CC2020" NeedleRightColor="#E03030" NeedleStartWidth="12" PivotColor="#CC2020"
-                            PivotRadius="10" StartAngle="0" SweepAngle="360" ValueColor="White"
-                            ValueFontSize="24" ValueFormat="{}{0:N0}°"
-                            ValueVisible="{Binding ValueVisible}">
-            <clam:ClamGaugeView.GestureRecognizers>
-                <TapGestureRecognizer Command="{Binding RandomCommand}" />
-            </clam:ClamGaugeView.GestureRecognizers>
-        </clam:ClamGaugeView>
+    <Grid>
+        <Grid Style="{StaticResource FillGrid}"
+              RowDefinitions="*,Auto">
+            <clam:ClamGaugeView Grid.Row="0"
+                                Style="{StaticResource GaugeView}"
+                                Value="{Binding Value}"
+                                AnimationDuration="{Binding AnimationDuration}"
+                                ArcEndColor="Transparent" ArcStartColor="Transparent" ArcTrackColor="Transparent" BezelInnerThickness="0"
+                                BezelOuterEndColor="#252525" BezelOuterStartColor="#252525" BezelOuterThickness="6" GaugeBackgroundStartColor="#383838"
+                                LabelColor="White"
+                                LabelConverter="{Binding LabelConverter}"
+                                LabelExtent="0.90" LabelFontSize="28"
+                                LabelInterval="{Binding LabelInterval}"
+                                MajorTickColor="White" MajorTickInnerExtent="0.62" MajorTickInterval="45" MajorTickOuterExtent="0.78"
+                                MajorTickThickness="2" MaxValue="360" MinValue="0" MinorTickColor="#C0C0C0"
+                                MinorTickInnerExtent="0.66" MinorTickInterval="22.5" MinorTickOuterExtent="0.78" NeedleEndExtent="0.54"
+                                NeedleLeftColor="#CC2020" NeedleRightColor="#E03030" NeedleStartWidth="12" PivotColor="#CC2020"
+                                PivotRadius="10" StartAngle="0" SweepAngle="360" ValueColor="White"
+                                ValueFontSize="24" ValueFormat="{}{0:N0}°"
+                                ValueVisible="{Binding ValueVisible}">
+                <clam:ClamGaugeView.GestureRecognizers>
+                    <TapGestureRecognizer Command="{Binding RandomCommand}" />
+                </clam:ClamGaugeView.GestureRecognizers>
+            </clam:ClamGaugeView>
 
-        <Slider Grid.Row="1"
-                Style="{StaticResource GaugeSlider}"
-                Value="{Binding Value, Mode=TwoWay}"
-                Minimum="0" Maximum="360" />
+            <Slider Grid.Row="1"
+                    Style="{StaticResource GaugeSlider}"
+                    Value="{Binding Value, Mode=TwoWay}"
+                    Minimum="0" Maximum="360" />
+        </Grid>
+
+        <cmc:BottomSheetView Style="{StaticResource SettingSheet}"
+                             IsOpen="{Binding IsSettingOpen}">
+            <cmc:BottomSheetView.SheetTemplate>
+                <DataTemplate x:DataType="{x:Type module:GaugeWindViewModel}">
+                    <VerticalStackLayout Style="{StaticResource SheetStack}">
+                        <Label Style="{StaticResource SheetTitle}"
+                               Text="目盛りの表示" />
+                        <Grid Style="{StaticResource SheetGrid}"
+                              ColumnDefinitions="*,*,*">
+                            <Button Grid.Column="0"
+                                    Style="{StaticResource SheetButton}"
+                                    Command="{Binding SelectLabelModeCommand}"
+                                    CommandParameter="0"
+                                    Text="方位 90">
+                                <Button.Triggers>
+                                    <DataTrigger TargetType="Button"
+                                                 Value="0"
+                                                 Binding="{Binding LabelMode}">
+                                        <Setter Property="BackgroundColor" Value="{StaticResource BlueDefault}" />
+                                        <Setter Property="TextColor" Value="White" />
+                                    </DataTrigger>
+                                </Button.Triggers>
+                            </Button>
+                            <Button Grid.Column="1"
+                                    Style="{StaticResource SheetButton}"
+                                    Command="{Binding SelectLabelModeCommand}"
+                                    CommandParameter="1"
+                                    Text="方位 45">
+                                <Button.Triggers>
+                                    <DataTrigger TargetType="Button"
+                                                 Value="1"
+                                                 Binding="{Binding LabelMode}">
+                                        <Setter Property="BackgroundColor" Value="{StaticResource BlueDefault}" />
+                                        <Setter Property="TextColor" Value="White" />
+                                    </DataTrigger>
+                                </Button.Triggers>
+                            </Button>
+                            <Button Grid.Column="2"
+                                    Style="{StaticResource SheetButton}"
+                                    Command="{Binding SelectLabelModeCommand}"
+                                    CommandParameter="2"
+                                    Text="角度">
+                                <Button.Triggers>
+                                    <DataTrigger TargetType="Button"
+                                                 Value="2"
+                                                 Binding="{Binding LabelMode}">
+                                        <Setter Property="BackgroundColor" Value="{StaticResource BlueDefault}" />
+                                        <Setter Property="TextColor" Value="White" />
+                                    </DataTrigger>
+                                </Button.Triggers>
+                            </Button>
+                        </Grid>
+                        <Label Style="{StaticResource SheetTitle}"
+                               Text="表示" />
+                        <Grid Style="{StaticResource SheetGrid}"
+                              ColumnDefinitions="*,*">
+                            <Grid Grid.Column="0"
+                                  ColumnDefinitions="*,Auto">
+                                <Label Grid.Column="0"
+                                       Style="{StaticResource SheetSwitchLabel}"
+                                       Text="値" />
+                                <Switch Grid.Column="1"
+                                        Style="{StaticResource SheetSwitch}"
+                                        IsToggled="{Binding ValueVisible}" />
+                            </Grid>
+                            <Grid Grid.Column="1"
+                                  ColumnDefinitions="*,Auto">
+                                <Label Grid.Column="0"
+                                       Style="{StaticResource SheetSwitchLabel}"
+                                       Text="針の動き" />
+                                <Switch Grid.Column="1"
+                                        Style="{StaticResource SheetSwitch}"
+                                        IsToggled="{Binding NeedleAnimated}" />
+                            </Grid>
+                        </Grid>
+                    </VerticalStackLayout>
+                </DataTemplate>
+            </cmc:BottomSheetView.SheetTemplate>
+        </cmc:BottomSheetView>
     </Grid>
 
 </ContentView>

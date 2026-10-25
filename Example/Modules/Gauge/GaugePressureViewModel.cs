@@ -23,6 +23,21 @@ public sealed partial class GaugePressureViewModel : GaugeViewModelBase
     [ObservableProperty]
     public partial GaugeUnitPosition UnitPosition { get; set; } = GaugeUnitPosition.Bottom;
 
+    [ObservableProperty]
+    public partial string UnitText { get; set; } = "単位 下";
+
+    [ObservableProperty]
+    public partial string LabelText { get; set; } = "目盛り 20";
+
+    [ObservableProperty]
+    public partial string ValueText { get; set; } = "値 小数なし";
+
+    public IObserveCommand ToggleUnitCommand { get; }
+
+    public IObserveCommand ToggleLabelCommand { get; }
+
+    public IObserveCommand ToggleValueCommand { get; }
+
     public IReadOnlyList<ColorSwatch> BandSwatches { get; }
 
     //--------------------------------------------------------------------------------
@@ -33,29 +48,36 @@ public sealed partial class GaugePressureViewModel : GaugeViewModelBase
         : base(950, 1050, 1013, 0)
     {
         BandSwatches = [.. Bands.Select(x => ColorSwatch.Gradient(x.Start, x.End, MakeDelegateCommand(() => SelectBand(x.Start, x.End))))];
+        ToggleUnitCommand = MakeDelegateCommand(ToggleUnit);
+        ToggleLabelCommand = MakeDelegateCommand(ToggleLabel);
+        ToggleValueCommand = MakeDelegateCommand(ToggleValue);
+    }
+
+    //--------------------------------------------------------------------------------
+    // Setting
+    //--------------------------------------------------------------------------------
+
+    private void ToggleUnit()
+    {
+        UnitPosition = UnitPosition == GaugeUnitPosition.Bottom ? GaugeUnitPosition.Right : GaugeUnitPosition.Bottom;
+        UnitText = UnitPosition == GaugeUnitPosition.Bottom ? "単位 下" : "単位 右";
+    }
+
+    private void ToggleLabel()
+    {
+        LabelInterval = LabelInterval > 10 ? 10 : 20;
+        LabelText = $"目盛り {LabelInterval:N0}";
+    }
+
+    private void ToggleValue()
+    {
+        ValueFormat = ValueFormat == "{0:N0}" ? "{0:N1}" : "{0:N0}";
+        ValueText = ValueFormat == "{0:N0}" ? "値 小数なし" : "値 小数 1 桁";
     }
 
     //--------------------------------------------------------------------------------
     // Navigation
     //--------------------------------------------------------------------------------
-
-    protected override Task OnNotifyFunction2()
-    {
-        UnitPosition = UnitPosition == GaugeUnitPosition.Bottom ? GaugeUnitPosition.Right : GaugeUnitPosition.Bottom;
-        return Task.CompletedTask;
-    }
-
-    protected override Task OnNotifyFunction3()
-    {
-        LabelInterval = LabelInterval > 10 ? 10 : 20;
-        return Task.CompletedTask;
-    }
-
-    protected override Task OnNotifyFunction4()
-    {
-        ValueFormat = ValueFormat == "{0:N0}" ? "{0:N1}" : "{0:N0}";
-        return Task.CompletedTask;
-    }
 
     //--------------------------------------------------------------------------------
     // Operation
