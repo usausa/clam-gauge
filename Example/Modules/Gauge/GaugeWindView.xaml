@@ -57,11 +57,11 @@
                             <Button Grid.Column="0"
                                     Style="{StaticResource SheetButton}"
                                     Command="{Binding SelectLabelModeCommand}"
-                                    CommandParameter="0"
+                                    CommandParameter="{x:Int32 0}"
                                     Text="方位 90">
                                 <Button.Triggers>
                                     <DataTrigger TargetType="Button"
-                                                 Value="0"
+                                                 Value="{x:Int32 0}"
                                                  Binding="{Binding LabelMode}">
                                         <Setter Property="BackgroundColor" Value="{StaticResource BlueDefault}" />
                                         <Setter Property="TextColor" Value="White" />
@@ -71,11 +71,11 @@
                             <Button Grid.Column="1"
                                     Style="{StaticResource SheetButton}"
                                     Command="{Binding SelectLabelModeCommand}"
-                                    CommandParameter="1"
+                                    CommandParameter="{x:Int32 1}"
                                     Text="方位 45">
                                 <Button.Triggers>
                                     <DataTrigger TargetType="Button"
-                                                 Value="1"
+                                                 Value="{x:Int32 1}"
                                                  Binding="{Binding LabelMode}">
                                         <Setter Property="BackgroundColor" Value="{StaticResource BlueDefault}" />
                                         <Setter Property="TextColor" Value="White" />
@@ -85,11 +85,11 @@
                             <Button Grid.Column="2"
                                     Style="{StaticResource SheetButton}"
                                     Command="{Binding SelectLabelModeCommand}"
-                                    CommandParameter="2"
+                                    CommandParameter="{x:Int32 2}"
                                     Text="角度">
                                 <Button.Triggers>
                                     <DataTrigger TargetType="Button"
-                                                 Value="2"
+                                                 Value="{x:Int32 2}"
                                                  Binding="{Binding LabelMode}">
                                         <Setter Property="BackgroundColor" Value="{StaticResource BlueDefault}" />
                                         <Setter Property="TextColor" Value="White" />

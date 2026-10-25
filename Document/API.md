@@ -109,17 +109,6 @@ The center value shows the animated value as it is, while the needle stops at th
 
 `PaintSurface` of `SKCanvasView` is raised after the gauge is drawn, with the canvas in pixels.  
 
-## 🔤 Fonts
-
-Per character font fallback comes from [SkiaExtension](https://github.com/usausa/skia-extension).  
-Configure it with `FallbackFonts` in the `SkiaExtension` namespace at startup, before the first view is shown.  
-`Languages` defaults to the UI language of the device.  
-
-```csharp
-FallbackFonts.Languages = ["ja", "en"];
-FallbackFonts.Typefaces = [SKTypeface.FromStream(await FileSystem.OpenAppPackageFileAsync("NotoSansJP-Regular.ttf"))];
-```
-
 ## 🎨 GaugeRange
 
 A segment of the arc.  
@@ -137,3 +126,14 @@ It does not notify changes, so replace the item or the list to redraw.
 |---|---|
 | `Right` | Unit after the value on the same line |
 | `Bottom` | Unit centered below the value |
+
+## 🔤 Fonts
+
+Per character font fallback comes from [SkiaExtension](https://github.com/usausa/skia-extension).  
+Configure it with `FallbackFonts` in the `SkiaExtension` namespace at startup, before the first view is shown.  
+`Languages` defaults to the UI language of the device.  
+
+```csharp
+FallbackFonts.Languages = ["ja", "en"];
+FallbackFonts.Typefaces = [SKTypeface.FromStream(await FileSystem.OpenAppPackageFileAsync("NotoSansJP-Regular.ttf"))];
+```
