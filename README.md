@@ -149,6 +149,7 @@ public sealed class WeatherViewModel : ObservableObject
 | **Value** | Center value with a format, unit on the right or below, vertical offset |
 | **Needle** | Tapered two-tone needle, round pivot, animation with a duration and an easing |
 | **Fonts** | Per character fallback to the `FallbackFonts` typefaces of SkiaExtension and system fonts, emoji sequences included |
+| **Performance** | Judged by the p95 of the draw time staying within 16 ms; fps is not used and no extra margin is added for slower devices |
 
 ## 📖 API
 
