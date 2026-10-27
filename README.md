@@ -11,7 +11,7 @@ Face, bezels, arc, colored ranges, ticks, labels, center value and needle are al
 |:-:|:-:|:-:|
 | <img src="Document/pressure.png" width="240" /> | <img src="Document/humidity.png" width="240" /> | <img src="Document/temperature.png" width="240" /> |
 
-| 🧭 Compass labels | 🧩 Pattern in a style | 🏁 Turned scale and red zone |
+| 🧭 Compass labels | 🧩 Pattern in a style | 🏁 Turned scale |
 |:-:|:-:|:-:|
 | <img src="Document/wind.png" width="240" /> | <img src="Document/speed.png" width="240" /> | <img src="Document/rpm.png" width="240" /> |
 
