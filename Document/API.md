@@ -55,7 +55,7 @@ Angles and `ValueOffsetY` must be finite, font sizes must be positive and finite
 | `LabelExtent` | `double` | `0.57` | ✓ | Center of the labels |
 | `LabelFormat` | `string` | `{0:N0}` | ✓ | Format of the label value in the current culture: composite when it contains `{` (`{0:N0}%`), otherwise a format string (`N0`) |
 | `LabelConverter` | `IValueConverter?` | `null` | ✓ | Converts the label value (`double`) to its text; used instead of `LabelFormat` |
-| `LabelFormatter` | `Func<double, string>?` | `null` | | Label text from code; used before `LabelConverter` and `LabelFormat` |
+| `LabelFormatter` | `Func<double, string>?` | `null` | ✓ | Label text from code; used before `LabelConverter` and `LabelFormat` |
 | `LabelFontSize` | `double` | `12` | ✓ | Font size of the labels |
 | `LabelColor` | `Color` | `Black` | ✓ | Color of the labels |
 

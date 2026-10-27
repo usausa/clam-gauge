@@ -106,7 +106,7 @@ A style can hold a whole pattern, ranges included.
 
 ## 🔗 Binding and MVVM
 
-Every property except `LabelFormatter` is a bindable property.  
+Every property is a bindable property.  
 `Ranges` takes a list from a binding or a style setter, and a list that implements `INotifyCollectionChanged` redraws the gauge when it changes.  
 `Example/Modules/Gauge` contains a screen for each of six gauge patterns.  
 

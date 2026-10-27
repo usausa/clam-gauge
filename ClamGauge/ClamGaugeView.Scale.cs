@@ -18,6 +18,7 @@ public partial class ClamGaugeView
     public static readonly BindableProperty LabelConverterProperty = BindableProperty.Create(nameof(LabelConverter), typeof(IValueConverter), typeof(ClamGaugeView), propertyChanged: OnRenderInputChanged);
     public static readonly BindableProperty LabelFontSizeProperty = BindableProperty.Create(nameof(LabelFontSize), typeof(double), typeof(ClamGaugeView), 12d, validateValue: static (_, value) => ValidatePositive(value, nameof(LabelFontSize)), propertyChanged: OnRenderInputChanged);
     public static readonly BindableProperty LabelColorProperty = BindableProperty.Create(nameof(LabelColor), typeof(Color), typeof(ClamGaugeView), Colors.Black, propertyChanged: OnRenderInputChanged);
+    public static readonly BindableProperty LabelFormatterProperty = BindableProperty.Create(nameof(LabelFormatter), typeof(Func<double, string>), typeof(ClamGaugeView), propertyChanged: OnRenderInputChanged);
 
     public double MajorTickInterval
     {
@@ -119,11 +120,7 @@ public partial class ClamGaugeView
 
     public Func<double, string>? LabelFormatter
     {
-        get;
-        set
-        {
-            field = value;
-            InvalidateSurface();
-        }
+        get => (Func<double, string>?)GetValue(LabelFormatterProperty);
+        set => SetValue(LabelFormatterProperty, value);
     }
 }

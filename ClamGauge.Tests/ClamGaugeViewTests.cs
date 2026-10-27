@@ -41,6 +41,7 @@ public sealed class ClamGaugeViewTests
         (nameof(ClamGaugeView.LabelConverter), typeof(IValueConverter), null),
         (nameof(ClamGaugeView.LabelFontSize), typeof(double), 12d),
         (nameof(ClamGaugeView.LabelColor), typeof(Color), Colors.Black),
+        (nameof(ClamGaugeView.LabelFormatter), typeof(Func<double, string>), null),
         (nameof(ClamGaugeView.ValueVisible), typeof(bool), true),
         (nameof(ClamGaugeView.ValueFormat), typeof(string), "{0:N1}"),
         (nameof(ClamGaugeView.ValueFontSize), typeof(double), 28d),
@@ -184,7 +185,7 @@ public sealed class ClamGaugeViewTests
         {
             index++;
 
-            if (name is nameof(ClamGaugeView.Value) or nameof(ClamGaugeView.FontFamily) or nameof(ClamGaugeView.LabelFormat) or nameof(ClamGaugeView.ValueFormat) or nameof(ClamGaugeView.AnimationDuration) or nameof(ClamGaugeView.AnimationEasing))
+            if (name is nameof(ClamGaugeView.Value) or nameof(ClamGaugeView.FontFamily) or nameof(ClamGaugeView.LabelFormat) or nameof(ClamGaugeView.ValueFormat) or nameof(ClamGaugeView.LabelFormatter) or nameof(ClamGaugeView.AnimationDuration) or nameof(ClamGaugeView.AnimationEasing))
             {
                 continue;
             }
